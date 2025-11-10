@@ -10,7 +10,8 @@
 </template>
 
 <script lang="ts" setup>
-definePageMeta({
-  middleware: 'auth'
-})
+const { $nuxtAuthentication } = useNuxtApp()
+
+const user = useUser()
+await $nuxtAuthentication(`/auth/v1/profile/${user.userId.value}`, { method: 'GET' })
 </script>

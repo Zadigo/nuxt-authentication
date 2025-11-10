@@ -12,8 +12,8 @@ export default defineNuxtConfig({
       nuxtAuthentication: {
         domain: 'http://127.0.0.1:8000',
         enabled: true,
-        refreshEndpoint: '/api/token/refresh',
-        accessEndpoint: '/api/token/access',
+        accessEndpoint: '/auth/v1/token/',
+        refreshEndpoint: '/auth/v1/token/refresh/',
         login: '/login',
         loginRedirectPath: '/',
         strategy: 'renew',

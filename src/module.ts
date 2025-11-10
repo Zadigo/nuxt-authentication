@@ -1,4 +1,4 @@
-import { addPlugin, addImports, createResolver, defineNuxtModule, installModule } from '@nuxt/kit'
+import { addPlugin, addImports, createResolver, defineNuxtModule, installModule, addRouteMiddleware } from '@nuxt/kit'
 import { defu } from 'defu'
 
 // Module options TypeScript interface definition
@@ -44,6 +44,16 @@ export interface ModuleOptions {
    * @default 'Token'
    */
   bearerTokenType?: string
+  /**
+   * Name of the access token cookie
+   * @default 'access'
+   */
+  accessTokenName: string
+  /**
+   * Name of the refresh token cookie
+   * @default 'refresh'
+   */
+  refreshTokenName: string
 }
 
 declare module '@nuxt/schema' {
@@ -73,7 +83,9 @@ export default defineNuxtModule<ModuleOptions>({
     login: '/login',
     loginRedirectPath: '/',
     strategy: 'renew',
-    bearerTokenType: 'Token'
+    bearerTokenType: 'Token',
+    accessTokenName: 'access',
+    refreshTokenName: 'refresh'
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
@@ -103,6 +115,10 @@ export default defineNuxtModule<ModuleOptions>({
       { name: 'refreshAccessToken', from: utilsPath },
       { name: 'refreshAccessTokenClient', from: utilsPath }
     ])
+
+    // Add middleware from your module
+    // const middlewarePath = resolver.resolve('./runtime/middleware')
+    // addRouteMiddleware('auth', middlewarePath)
 
     await installModule('@vueuse/nuxt')
   }

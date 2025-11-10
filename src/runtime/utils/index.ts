@@ -5,7 +5,7 @@ import { isDefined } from '@vueuse/core'
 /**
  * @private
  * @param url The base url
- * @param path The path 
+ * @param path The path
  */
 export function getUrl(url: string, path: Undefineable<string>) {
   if (!path) {
@@ -36,8 +36,8 @@ export async function refreshAccessToken(refresh: Undefineable<string>) {
   }
 
   const config = useRuntimeConfig().public.nuxtAuthentication
-  const response = await $fetch<TokenRefreshApiResponse>('/auth/v1/token/refresh/', {
-    baseURL: getUrl(config.domain, config.refreshEndpoint),
+  const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint, {
+    baseURL: config.domain,
     method: 'POST',
     body: {
       refresh
@@ -60,13 +60,14 @@ export async function refreshAccessTokenClient() {
     }
   }
 
-  const refreshToken = useCookie('refresh')
+  const config = useRuntimeConfig().public.nuxtAuthentication
+  const refreshToken = useCookie(config.refreshTokenName)
 
   if (isDefined(refreshToken)) {
     const response = await refreshAccessToken(refreshToken.value)
 
     if (response.access) {
-      useCookie('access').value = response.access
+      useCookie(config.accessTokenName).value = response.access
     }
 
     return response

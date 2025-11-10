@@ -1,59 +1,7 @@
 import { useRuntimeConfig } from '#app'
-import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useState } from '#imports'
+import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useRouter, useState } from '#imports'
 import { useJwt } from '@vueuse/integrations/useJwt'
-import type { Nullable } from '../types'
-
-export interface LoginApiResponse {
-  access: string
-  refresh: string
-}
-
-export type TokenRefreshApiResponse = Pick<LoginApiResponse, 'access'>
-
-/**
- * Helper function used to ask for a new access
- * token for the user
- * @param refresh - Refresh token of the user
- */
-export async function refreshAccessToken<T extends TokenRefreshApiResponse>(refresh: string) {
-  const response = await $fetch<T>('/auth/v1/token/refresh/', {
-    baseURL: useRuntimeConfig().public.nuxtAuthentication.refreshEndpoint,
-    method: 'POST',
-    body: {
-      refresh
-    }
-  })
-
-  return {
-    access: response.access
-  }
-}
-
-/**
- * Function used to refresh the access token
- * on the client side
- */
-export async function refreshAccessTokenClient<T extends TokenRefreshApiResponse>() {
-  if (import.meta.server) {
-    return {
-      access: null
-    }
-  }
-
-  const refreshToken = useCookie('refresh')
-
-  if (isDefined(refreshToken)) {
-    const response = await refreshAccessToken<T>(refreshToken.value)
-
-    if (response.access) {
-      useCookie('access').value = response.access
-    }
-
-    return response
-  }
-
-  return { access: null }
-}
+import type { LoginApiResponse, Nullable } from '../types'
 
 /**
  * Function used to login the user in the frontend
@@ -100,17 +48,17 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
   const usernameField = ref<string>('')
   const password = ref<string>('')
 
-  const accessToken = useCookie('access', { sameSite: 'strict', secure: true })
-  const refreshToken = useCookie('refresh', { sameSite: 'strict', secure: true })
-
   const config = useRuntimeConfig().public.nuxtAuthentication
+
+  const accessToken = useCookie(config.accessTokenName, { sameSite: 'strict', secure: true })
+  const refreshToken = useCookie(config.refreshTokenName, { sameSite: 'strict', secure: true })
 
   async function login() {
     const data = await $fetch<T>(config.accessEndpoint, {
       baseURL: config.domain,
       method: 'POST',
       body: {
-        [`$${usernameFieldName}`]: usernameField.value,
+        [`${usernameFieldName}`]: usernameField.value,
         password: password.value
       },
       onRequestError() {
@@ -122,6 +70,11 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
       accessToken.value = data.access
       refreshToken.value = data.refresh
       useState('isAuthenticated').value = true
+
+      if (config.loginRedirectPath) {
+        const router = useRouter()
+        await router.push(config.loginRedirectPath)
+      }
     }
   }
 
@@ -178,7 +131,12 @@ export async function useLogout() {
 
   useState('isAuthenticated').value = false
 
-  // router.push('/')
+  const config = useRuntimeConfig().public.nuxtAuthentication
+
+  if (config.loginRedirectPath) {
+    const router = useRouter()
+    await router.push(config.loginRedirectPath)
+  }
 }
 
 interface JWTResponseData {
@@ -212,14 +170,10 @@ export function useUser<P>() {
     return undefined
   })
 
-  const getProfile = useMemoize(async (id: Nullable<number>) => {
-    if (isDefined(id)) {
-      const { $client } = useNuxtApp()
-
-      const data = await $client<P>(`/api/v1/accounts/${id}`, {
-        method: 'GET'
-      })
-      return data
+  const getProfile = useMemoize(async (path: string) => {
+    if (isDefined(path)) {
+      const { $nuxtAuthentication } = useNuxtApp()
+      return await $nuxtAuthentication<P>(path, { method: 'GET' })
     }
     console.warn('User ID is not defined')
   })

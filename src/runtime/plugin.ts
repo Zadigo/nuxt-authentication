@@ -1,4 +1,5 @@
 import { defineNuxtPlugin, useCookie, useRuntimeConfig, navigateTo } from '#app'
+import type { LoginApiResponse } from './types'
 import { refreshAccessToken } from './utils'
 
 /**
@@ -12,7 +13,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   const config = useRuntimeConfig().public.nuxtAuthentication
 
-  const client = $fetch.create({
+  const nuxtAuthentication = $fetch.create<LoginApiResponse>({
     baseURL: config.domain,
     onRequest({ _request, options, _error }) {
       options.headers.set('Content-Type', 'application/json')
@@ -24,7 +25,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       if (response.status === 401) {
         access.value = null
 
-        if (refresh.value) {
+        if (config.strategy === 'renew' && refresh.value) {
           const { access: newAccess } = await refreshAccessToken(refresh.value)
           access.value = newAccess
         } else {
@@ -37,7 +38,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   return {
     provide: {
-      client
+      nuxtAuthentication
     }
   }
 })
