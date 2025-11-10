@@ -1,3 +1,7 @@
+## v1.0.0
+
+[compare changes](https://github.com/your-org/my-module/compare/v1.0.0-alpha.1...v1.0.0)
+
 ## v1.0.0-alpha.1 (2025-11-10)
 
 - Improve documentation for the README.md file
