@@ -142,7 +142,7 @@ export async function useLogout() {
   }
 }
 
-interface JWTResponseData {
+export interface JWTResponseData {
   user_id: number
 }
 
@@ -154,7 +154,7 @@ export function useUser<P>() {
     return {
       userId: computed(() => null),
       isAuthenticated: ref(false),
-      getProfile: async (_id: Nullable<number>) => null as Nullable<P>
+      getProfile: async (_path: string) => null as Nullable<P>
     }
   }
 

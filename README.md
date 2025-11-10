@@ -43,6 +43,65 @@ npx nuxi module add my-module
 
 That's it! You can now use Nuxt Authentication in your Nuxt app ✨
 
+## Composables
+
+### Sending authenticated requests
+
+To ensure that all of your requests are authenticated, you can use the `$nuxtAuthentication` helper:
+
+```ts
+const { $nuxtAuthentication } = useNuxtApp()
+const response = await $nuxtAuthentication.fetch('/api/protected-endpoint', { method: 'GET' })
+```
+
+> [!NOTE]
+> This helper automatically attaches the access token to the `Authorization` header of your requests and will also attempt to refresh the access token if it has expired
+> if the refresh strategy is set to `renew`.
+
+### Login
+
+```vue
+<script lang="ts" setup>
+const { usernameField, password, login } = useLogin('username')
+const { userId, isAuthenticated } = useUser()
+</script>
+```
+
+`usernameField`
+
+The name of the field to be used to send the username (or email) to the backend.
+
+### Logout
+
+```vue
+<template>
+  <nuxt-button @click="useLogout">
+    Logout
+  </nuxt-button>
+</template>
+```
+
+### Checking user state
+
+You can check for the user state with the `useUser` composable:
+
+```vue
+<script lang="ts" setup>
+const { userId, isAuthenticated, getProfile } = useUser()
+</script>
+```
+
+`userId`
+
+The unique identifier of the authenticated user parsed from the [JWT token](https://jwt.io/).
+
+`isAuthenticated`
+
+A boolean indicating whether the user is authenticated or not.
+
+`getProfile(apiEndpoint: string)`
+
+A helper function which can be used to the user profile from the given API endpoint and populates the user state.
 
 ## Contribution
 

@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-const { userId, isAuthenticated, getProfile } = useUser()
+const { userId, isAuthenticated, getProfile } = useUser<{ email: string, username: string }>()
 
 onMounted(async () => {
   if (userId.value) {
