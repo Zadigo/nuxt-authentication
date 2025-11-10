@@ -111,36 +111,33 @@ Enable or disable the module (default: `true`).
 
 `refreshEndpoint`
 
-The API endpoint to be used to refresh the access token (default: `'/api/token/refresh'`).
-
-'/api/token/refresh'
-
+The API endpoint to be used to refresh the access token (default: `/api/token/refresh`).
 
 `accessEndpoint`
 
-The API endpoint to be used to obtain a new access token (default: `'/api/token/access'`).
+The API endpoint to be used to obtain a new access token (default: `/api/token/access`).
 
 `login`:
 
-The API endpoint to be used to log in (default: `'/login'`).
+The API endpoint to be used to log in (default: `/login`).
 
 `loginRedirectPath`
 
-The path to redirect the user to after a successful login (default: `'/'`).
+The path to redirect the user to after a successful login (default: `/`).
 
 `strategy`
 
-The refresh strategy to be used when the access token expires (default: `'renew'`).
+The refresh strategy to be used when the access token expires (default: `renew`).
 
 Possible values:
 
-- `'renew'`: Attempt to refresh the access token using the refresh token.
-- `'fail'`: Do not attempt to refresh the access token and consider the user as logged out.
-- `'redirect'`: Redirect the user to the login page.
+- `renew`: Attempt to refresh the access token using the refresh token.
+- `fail`: Do not attempt to refresh the access token and consider the user as logged out.
+- `redirect`: Redirect the user to the login page.
 
 `bearerTokenType`
 
-The type of the bearer token to be used in the `Authorization` header (default: `'Token'`).
+The type of the bearer token to be used in the `Authorization` header (default: `Token`).
 
 `accessTokenName`
 
