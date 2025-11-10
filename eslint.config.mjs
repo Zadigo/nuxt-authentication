@@ -11,13 +11,14 @@ export default createConfigForNuxt({
   },
   dirs: {
     src: [
-      './playground',
-    ],
-  },
+      './playground'
+    ]
+  }
 })
   .append(
     {
       rules: {
+        'nuxt/nuxt-config-keys-order': 'warn',
         'vue/max-attributes-per-line': 'off',
         '@stylistic/comma-dangle': ['off', 'always-multiline'],
         '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],

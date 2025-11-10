@@ -1,12 +1,13 @@
 import { useRuntimeConfig } from '#app'
 import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useRouter, useState } from '#imports'
+import { useCounter, useThrottleFn } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import type { LoginApiResponse, Nullable } from '../types'
 
 /**
  * Function used to login the user in the frontend
  */
-export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' | 'username' = 'email') {
+export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000) {
   if (import.meta.server) {
     return {
       /**
@@ -43,7 +44,7 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
     }
   }
 
-  const failureCount = ref(0)
+  const { count, inc: incrementFailureCount } = useCounter()
 
   const usernameField = ref<string>('')
   const password = ref<string>('')
@@ -62,7 +63,7 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
         password: password.value
       },
       onRequestError() {
-        failureCount.value += 1
+        incrementFailureCount()
       }
     })
 
@@ -78,13 +79,15 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
     }
   }
 
+  const _login = useThrottleFn(login, throttle)
+
   const canBeSubmitted = computed(() => usernameField.value !== '' && password.value !== '')
 
   return {
     /**
      * Login function
      */
-    login,
+    login: _login,
     /**
      * Email or username of the user
      * @default ''
@@ -99,7 +102,7 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
      * Number of failed login attempts
      * @default 0
      */
-    failureCount,
+    failureCount: count,
     /**
      * Access token of the user
      */
