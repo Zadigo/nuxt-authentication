@@ -38,7 +38,7 @@ npx nuxi module add nuxt-authentication
 
 That's it! You can now use Nuxt Authentication in your Nuxt app ✨
 ```bash
-npx nuxi module add my-module
+npx nuxi module add nuxt-authentication
 ```
 
 That's it! You can now use Nuxt Authentication in your Nuxt app ✨
