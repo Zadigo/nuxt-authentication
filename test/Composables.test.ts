@@ -1,4 +1,4 @@
-import { setup } from '@nuxt/test-utils/e2e'
+import { setup, $fetch } from '@nuxt/test-utils/e2e'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 // import { useLogin } from '../src/runtime/composables'
