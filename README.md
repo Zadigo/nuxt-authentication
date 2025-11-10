@@ -24,19 +24,24 @@ REST framework or Laravel Sanctum.
 ## Features
 
 <!-- Highlight some of the features your module provide here -->
-- ⛰ &nbsp;Foo
-- 🚠 &nbsp;Bar
-- 🌲 &nbsp;Baz
+- ⛰ &nbsp;Login / Logout
+- 🚠 &nbsp;Check Authentication Status
+- 🌲 &nbsp;Fetch User Profile
 
 ## Quick Setup
 
 Install the module to your Nuxt application with one command:
 
 ```bash
+npx nuxi module add nuxt-authentication
+```
+
+That's it! You can now use Nuxt Authentication in your Nuxt app ✨
+```bash
 npx nuxi module add my-module
 ```
 
-That's it! You can now use My Module in your Nuxt app ✨
+That's it! You can now use Nuxt Authentication in your Nuxt app ✨
 
 
 ## Contribution

@@ -1,12 +1,11 @@
 export default defineNuxtConfig({
+  devtools: { enabled: true },
   modules: [
     '../src/module',
     '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/ui'
   ],
-  nuxtAuthentication: {},
-  devtools: { enabled: true },
   runtimeConfig: {
     public: {
       nuxtAuthentication: {

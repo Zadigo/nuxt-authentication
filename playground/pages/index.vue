@@ -15,6 +15,14 @@
         Refresh Access Token
       </nuxt-button>
 
+      <nuxt-login>
+        <template #default="{ login: login2 }">
+          <nuxt-button @click="login2">
+            Login via Slot
+          </nuxt-button>
+        </template>
+      </nuxt-login>
+
       <nuxt-card>
         {{ userId }} - {{ isAuthenticated }}
 

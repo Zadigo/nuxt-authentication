@@ -16,5 +16,11 @@ export default createConfigForNuxt({
   },
 })
   .append(
-    // your custom flat config here...
+    {
+      rules: {
+        'vue/max-attributes-per-line': 'off',
+        '@stylistic/comma-dangle': ['off', 'always-multiline'],
+        '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
+      }
+    }
   )

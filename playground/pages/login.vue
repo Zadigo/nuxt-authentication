@@ -6,7 +6,9 @@
       <nuxt-card>
         <nuxt-input v-model="usernameField" placeholder="Email" />
         <nuxt-input v-model="password" placeholder="Password" />`
-        <nuxt-button @click="login">Login</nuxt-button>
+        <nuxt-button @click="login">
+          Login
+        </nuxt-button>
       </nuxt-card>
     </nuxt-container>
   </section>

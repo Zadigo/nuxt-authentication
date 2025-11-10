@@ -1,4 +1,4 @@
-import { addPlugin, addImports, createResolver, defineNuxtModule, installModule, addRouteMiddleware } from '@nuxt/kit'
+import { addPlugin, addImports, createResolver, defineNuxtModule, installModule, addComponent } from '@nuxt/kit'
 import { defu } from 'defu'
 
 // Module options TypeScript interface definition
@@ -119,6 +119,18 @@ export default defineNuxtModule<ModuleOptions>({
     // Add middleware from your module
     // const middlewarePath = resolver.resolve('./runtime/middleware')
     // addRouteMiddleware('auth', middlewarePath)
+
+    addComponent({
+      name: 'AuthHandler',
+      filePath: resolver.resolve('./runtime/components/NuxtLogin.vue'),
+      global: true
+    })
+
+    addComponent({
+      name: 'LogoutHandler',
+      filePath: resolver.resolve('./runtime/components/NuxtLogout.vue'),
+      global: true
+    })
 
     await installModule('@vueuse/nuxt')
   }
