@@ -1,8 +1,52 @@
 import { useRuntimeConfig } from '#app'
 import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useRouter, useState } from '#imports'
-import { useCounter, useThrottleFn } from '@vueuse/core'
+import { createGlobalState, useCounter, useThrottleFn } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import type { LoginApiResponse, Nullable, TokenRefreshApiResponse } from '../types'
+
+/**
+ * Global state to manage authentication status. This composable
+ * should be ideally first used in `app.vue` to initialize the state.
+ */
+export const useNuxtAuthentication = createGlobalState(() => {
+  const config = useRuntimeConfig().public.nuxtAuthentication
+  const accessToken = useCookie(config.accessTokenName || 'access')
+
+  const hasToken = computed(() => isDefined(accessToken) && accessToken.value !== '')
+
+  if (import.meta.server) {
+    return {
+      /**
+       * Whether the user has a token stored. This does not mean that
+       * the user is authenticated
+       * @default false
+       */
+      hasToken,
+      /**
+       * Whether the user is actually authenticated
+       * @default false
+       */
+      isAuthenticated: ref(false)
+    }
+  }
+
+  // Creates a global state for isAuthenticated
+  const isAuthenticated = useState<boolean>('isAuthenticated', () => false)
+
+  return {
+    /**
+     * Whether the user has a token stored. This does not mean that
+     * the user is authenticated
+     * @default false
+     */
+    hasToken,
+    /**
+     * Whether the user is actually authenticated
+     * @default false
+     */
+    isAuthenticated
+  }
+})
 
 /**
  * Function used to login the user in the frontend
@@ -72,7 +116,7 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
     if (data) {
       accessToken.value = data.access
       refreshToken.value = data.refresh
-      useState('isAuthenticated').value = true
+      useState<boolean>('isAuthenticated').value = true
 
       callback?.(data)
 
@@ -159,15 +203,26 @@ export interface JWTResponseData {
 export function useUser<P>() {
   if (import.meta.server) {
     return {
+      /**
+       * User ID of the authenticated user
+       */
       userId: computed(() => null),
+      /**
+       * Whether the user is authenticated
+       * @default false
+       */
       isAuthenticated: ref(false),
+      /**
+       * Function to get the user's profile
+       * @param _path - The API path to fetch the user's profile
+       */
       getProfile: async (_path: string) => null as Nullable<P>
     }
   }
 
   const config = useRuntimeConfig().public.nuxtAuthentication
   const accessToken = useCookie(config.accessTokenName || 'access')
-  const isAuthenticated = useState('isAuthenticated', () => isDefined(accessToken) && accessToken.value !== '')
+  const isAuthenticated = useState('isAuthenticated', () => false)
 
   const userId = computed(() => {
     if (accessToken.value) {
