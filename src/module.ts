@@ -12,22 +12,22 @@ export interface ModuleOptions {
    * Enable or disable the module
    * @default true
    */
-  enabled: boolean
+  enabled?: boolean
   /**
    * Refresh token endpoint on the backend
    * @default '/api/token/refresh'
    */
-  refreshEndpoint: string
+  refreshEndpoint?: string
   /**
    * Access token endpoint on the backend
    * @default '/api/token/access'
    */
-  accessEndpoint: string
+  accessEndpoint?: string
   /**
    * Login path on Nuxt
    * @default '/login'
    */
-  login: string
+  login?: string
   /**
    * Path to redirect to after login
    * @default '/'
@@ -38,7 +38,7 @@ export interface ModuleOptions {
    * code is encountered
    * @default 'renew'
    */
-  strategy: 'renew' | 'login' | 'fail'
+  strategy?: 'renew' | 'login' | 'fail'
   /**
    * Optional bearer token type
    * @default 'Token'
@@ -48,12 +48,12 @@ export interface ModuleOptions {
    * Name of the access token cookie
    * @default 'access'
    */
-  accessTokenName: string
+  accessTokenName?: string
   /**
    * Name of the refresh token cookie
    * @default 'refresh'
    */
-  refreshTokenName: string
+  refreshTokenName?: string
 }
 
 declare module '@nuxt/schema' {
