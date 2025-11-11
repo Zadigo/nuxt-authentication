@@ -1,6 +1,5 @@
-import { useRuntimeConfig, useCookie } from '#app'
+import { useRuntimeConfig } from '#app'
 import type { TokenRefreshApiResponse, Undefineable } from '../types'
-import { isDefined } from '@vueuse/core'
 
 /**
  * @private

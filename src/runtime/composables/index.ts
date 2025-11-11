@@ -2,10 +2,12 @@ import { useRuntimeConfig } from '#app'
 import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useRouter, useState } from '#imports'
 import { useCounter, useThrottleFn } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
-import type { LoginApiResponse, Nullable } from '../types'
+import type { LoginApiResponse, Nullable, TokenRefreshApiResponse } from '../types'
 
 /**
  * Function used to login the user in the frontend
+ * @param usernameFieldName - The field name used for the username, either 'email' or 'username'
+ * @param throttle - Throttle time in milliseconds which limits how often the login function can be called
  */
 export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000) {
   if (import.meta.server) {
@@ -145,6 +147,9 @@ export async function useLogout() {
 }
 
 export interface JWTResponseData {
+  /**
+   * User ID of the authenticated user
+   */
   user_id: number
 }
 
@@ -185,8 +190,19 @@ export function useUser<P>() {
   })
 
   return {
+    /**
+     * User ID of the authenticated user
+     */
     userId,
+    /**
+     * Whether the user is authenticated
+     * @default false
+     */
     isAuthenticated,
+    /**
+     * Function to get the user's profile
+     * @param path - The API path to fetch the user's profile
+     */
     getProfile
   }
 }

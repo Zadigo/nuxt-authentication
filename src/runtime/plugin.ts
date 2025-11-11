@@ -38,6 +38,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   return {
     provide: {
+      /**
+       * Authenticated fetch client
+       */
       nuxtAuthentication
     }
   }
