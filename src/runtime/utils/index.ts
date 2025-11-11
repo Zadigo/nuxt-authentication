@@ -48,30 +48,3 @@ export async function refreshAccessToken(refresh: Undefineable<string>) {
     access: response.access
   }
 }
-
-/**
- * Function used to refresh the access token
- * on the client side
- */
-export async function refreshAccessTokenClient() {
-  if (import.meta.server) {
-    return {
-      access: null
-    }
-  }
-
-  const config = useRuntimeConfig().public.nuxtAuthentication
-  const refreshToken = useCookie(config.refreshTokenName)
-
-  if (isDefined(refreshToken)) {
-    const response = await refreshAccessToken(refreshToken.value)
-
-    if (response.access) {
-      useCookie(config.accessTokenName).value = response.access
-    }
-
-    return response
-  }
-
-  return { access: null }
-}

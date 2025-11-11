@@ -187,3 +187,50 @@ export function useUser<P>() {
     getProfile
   }
 }
+
+/**
+ * Function used to refresh the access token
+ * on the client side.
+ *
+ * @description You are responseble for setting the new
+ * access token in the cookie after calling this function
+ *
+ * @param throttle - Throttle time in milliseconds whcih limits
+ * how often the token can be refreshed
+ */
+export async function useRefreshAccessToken(throttle: number = 5000) {
+  if (import.meta.server) {
+    return {
+      access: null
+    }
+  }
+
+  const config = useRuntimeConfig().public.nuxtAuthentication
+  const accessToken = useCookie(config.accessTokenName || 'access')
+  const refreshToken = useCookie(config.refreshTokenName || 'refresh')
+
+  async function _renew() {
+    const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint || '/api/token/refresh', {
+      baseURL: config.domain,
+      method: 'POST',
+      body: {
+        refresh: refreshToken.value
+      }
+    })
+
+    accessToken.value = response.access
+  }
+
+  const renew = useThrottleFn(_renew, throttle)
+
+  return {
+    /**
+     * Function used to renew the access token
+     */
+    renew,
+    /**
+     * Access token of the user
+     */
+    accessToken
+  }
+}
