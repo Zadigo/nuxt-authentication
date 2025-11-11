@@ -36,6 +36,11 @@ export interface ModuleOptions {
   /**
    * How to handle token renewal when a 401
    * code is encountered
+   *
+   * - `renew` - Attempt to renew the access token using the refresh token
+   * - `login` - Redirect to the login page
+   * - `fail`  - Fail the request and do not attempt to renew
+   *
    * @default 'renew'
    */
   strategy?: 'renew' | 'login' | 'fail'
@@ -54,6 +59,21 @@ export interface ModuleOptions {
    * @default 'refresh'
    */
   refreshTokenName?: string
+  /**
+   * Verify token validity on backend side
+   * @default false
+   */
+  // verifyToken: boolean
+  /**
+   * Verify endpoint on the backend
+   * @default '/api/token/verify'
+   */
+  // verifyEndpoint?: string
+  /**
+   * Interval in seconds to verify token validity
+   * @default 60
+   */
+  // verifyInterval?: number
 }
 
 declare module '@nuxt/schema' {

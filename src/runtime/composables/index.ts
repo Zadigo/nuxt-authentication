@@ -4,15 +4,41 @@ import { createGlobalState, useCounter, useThrottleFn } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import type { LoginApiResponse, Nullable, TokenRefreshApiResponse } from '../types'
 
+// import { useInterval } from '@vueuse/core'
+
 /**
  * Global state to manage authentication status. This composable
  * should be ideally first used in `app.vue` to initialize the state.
  */
+// params: verificationValue : What to check for in the response in order to consider the token invalid
 export const useNuxtAuthentication = createGlobalState(() => {
   const config = useRuntimeConfig().public.nuxtAuthentication
   const accessToken = useCookie(config.accessTokenName || 'access')
 
   const hasToken = computed(() => isDefined(accessToken) && accessToken.value !== '')
+
+  // const intervalReturnValues = {
+  //   verify: {
+  //     /**
+  //      * Counter for the number of verification attempts
+  //      * @default 0
+  //      */
+  //     counter: ref(0),
+  //     /**
+  //      * Pause the verification interval
+  //      */
+  //     pause: () => { },
+  //     /**
+  //      * Resume the verification interval
+  //      */
+  //     resume: () => { },
+  //     /**
+  //      * Whether the verification interval is active
+  //      * @default false
+  //      */
+  //     verificationActive: ref(false)
+  //   }
+  // }
 
   if (import.meta.server) {
     return {
@@ -26,12 +52,57 @@ export const useNuxtAuthentication = createGlobalState(() => {
        * Whether the user is actually authenticated
        * @default false
        */
-      isAuthenticated: ref(false)
+      isAuthenticated: ref(false),
+      // ...intervalReturnValues
     }
   }
 
   // Creates a global state for isAuthenticated
   const isAuthenticated = useState<boolean>('isAuthenticated', () => false)
+
+  /**
+   * Verify
+   */
+
+  // if (config.verifyToken) {
+  //   const { $nuxtAuthentication } = useNuxtApp()
+  //   const { counter, pause, resume, isActive } = useInterval(config.verifyInterval, {
+  //     controls: true,
+  //     callback: async () => {
+  //       try {
+  //         const response = await $nuxtAuthentication<Record<string, string>>(config.verifyEndpoint || '/api/token/verify', {
+  //           method: 'POST',
+  //           body: {
+  //             token: accessToken.value
+  //           }
+  //         })
+
+  //         const value = response[verificationKey]
+
+  //         if (value === verificationValue) {
+  //           if (config.strategy === 'login') {
+  //             const router = useRouter()
+  //             await router.push(config.login || '/login')
+  //           } else if (config.strategy === 'renew') {
+  //             const { renew } = await useRefreshAccessToken()
+  //             await renew()
+  //           } else {
+  //             createError()
+  //           }
+  //         }
+
+  //         isAuthenticated.value = true
+  //       } catch {
+  //         isAuthenticated.value = false
+  //       }
+  //     }
+  //   })
+
+  //   intervalReturnValues.verify.counter = counter
+  //   intervalReturnValues.verify.pause = pause
+  //   intervalReturnValues.verify.resume = resume
+  //   intervalReturnValues.verify.verificationActive = isActive
+  // }
 
   return {
     /**
@@ -44,7 +115,8 @@ export const useNuxtAuthentication = createGlobalState(() => {
      * Whether the user is actually authenticated
      * @default false
      */
-    isAuthenticated
+    isAuthenticated,
+    // ...intervalReturnValues
   }
 })
 
@@ -275,7 +347,14 @@ export function useUser<P>() {
 export async function useRefreshAccessToken(throttle: number = 5000) {
   if (import.meta.server) {
     return {
-      access: null
+      /**
+       * Access token of the user
+       */
+      access: null,
+      /**
+       * Function used to renew the access token
+       */
+      renew: async () => { }
     }
   }
 
