@@ -72,6 +72,8 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
       refreshToken.value = data.refresh
       useState('isAuthenticated').value = true
 
+      callback?.(data)
+
       if (config.loginRedirectPath) {
         const router = useRouter()
         await router.push(config.loginRedirectPath)
