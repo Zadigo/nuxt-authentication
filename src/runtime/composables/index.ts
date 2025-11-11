@@ -51,11 +51,11 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
 
   const config = useRuntimeConfig().public.nuxtAuthentication
 
-  const accessToken = useCookie(config.accessTokenName, { sameSite: 'strict', secure: true })
-  const refreshToken = useCookie(config.refreshTokenName, { sameSite: 'strict', secure: true })
+  const accessToken = useCookie(config.accessTokenName || 'access', { sameSite: 'strict', secure: true })
+  const refreshToken = useCookie(config.refreshTokenName || 'refresh', { sameSite: 'strict', secure: true })
 
-  async function login() {
-    const data = await $fetch<T>(config.accessEndpoint, {
+  async function login(callback?: (data: T) => void) {
+    const data = await $fetch<T>(config.accessEndpoint || '/api/token/access', {
       baseURL: config.domain,
       method: 'POST',
       body: {
@@ -158,7 +158,8 @@ export function useUser<P>() {
     }
   }
 
-  const accessToken = useCookie('access')
+  const config = useRuntimeConfig().public.nuxtAuthentication
+  const accessToken = useCookie(config.accessTokenName || 'access')
   const isAuthenticated = useState('isAuthenticated', () => isDefined(accessToken) && accessToken.value !== '')
 
   const userId = computed(() => {

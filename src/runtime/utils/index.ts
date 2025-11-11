@@ -36,7 +36,7 @@ export async function refreshAccessToken(refresh: Undefineable<string>) {
   }
 
   const config = useRuntimeConfig().public.nuxtAuthentication
-  const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint, {
+  const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint || '/api/token/refresh', {
     baseURL: config.domain,
     method: 'POST',
     body: {
