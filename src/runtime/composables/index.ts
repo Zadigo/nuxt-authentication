@@ -2,6 +2,7 @@ import { useRuntimeConfig } from '#app'
 import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useRouter, useState } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
+import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
 import type { LoginApiResponse, Nullable, TokenRefreshApiResponse } from '../types'
 
 // import { useInterval } from '@vueuse/core'
@@ -9,6 +10,7 @@ import type { LoginApiResponse, Nullable, TokenRefreshApiResponse } from '../typ
 /**
  * Global state to manage authentication status. This composable
  * should be ideally first used in `app.vue` to initialize the state.
+ * @private
  */
 // params: verificationValue : What to check for in the response in order to consider the token invalid
 export const useNuxtAuthentication = createGlobalState(() => {
@@ -299,7 +301,7 @@ export function useUser<P>() {
        * Function to get the user's profile
        * @param _path - The API path to fetch the user's profile
        */
-      getProfile: async (_path: string) => null as Nullable<P>
+      getProfile: async (_path: NitroFetchRequest) => null as Nullable<P>
     }
   }
 
@@ -319,7 +321,7 @@ export function useUser<P>() {
     return undefined
   })
 
-  const getProfile = useMemoize(async (path: string) => {
+  const getProfile = useMemoize(async (path: NitroFetchRequest) => {
     if (isDefined(path)) {
       const { $nuxtAuthentication } = useNuxtApp()
       return await $nuxtAuthentication<P>(path, { method: 'GET' })
@@ -359,13 +361,13 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
   if (import.meta.server) {
     return {
       /**
-       * Access token of the user
-       */
-      access: null,
-      /**
        * Function used to renew the access token
        */
-      renew: async () => { }
+      renew: async () => { },
+      /**
+       * Access token of the user
+       */
+      accessToken: null,
     }
   }
 
@@ -396,5 +398,35 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
      * Access token of the user
      */
     accessToken
+  }
+}
+
+/**
+ * Composable used to perform authenticated fetch requests
+ * @param request The request URL or NitroFetchRequest object
+ * @param options Options for the fetch request
+ */
+export function useAuthenticatedFetch<T>(request: NitroFetchRequest, options?: NitroFetchOptions<NitroFetchRequest, 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'>) {
+  if (import.meta.server) {
+    return {
+      execute: async () => { }
+    }
+  }
+
+  const config = useRuntimeConfig().public.nuxtAuthentication
+  const accessToken = useCookie(config.accessTokenName || 'access')
+
+  async function _fetch() {
+    return await $fetch<T>(request, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `${config.bearerTokenType || 'Token'} ${accessToken.value}`,
+      }
+    })
+  }
+
+  return {
+    execute: _fetch
   }
 }
