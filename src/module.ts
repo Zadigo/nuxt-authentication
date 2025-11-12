@@ -127,7 +127,8 @@ export default defineNuxtModule<ModuleOptions>({
     addImports([
       { name: 'useLogin', from: composablesPath },
       { name: 'useLogout', from: composablesPath },
-      { name: 'useUser', from: composablesPath }
+      { name: 'useUser', from: composablesPath },
+      { name: 'useNuxtAuthentication', from: composablesPath }
     ])
 
     const utilsPath = resolver.resolve('./runtime/utils')
