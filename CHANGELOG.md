@@ -1,3 +1,15 @@
+## v1.0.5
+
+[compare changes](https://github.com/Zadigo/nuxt-authentication/compare/v1.0.4...v1.0.5)
+
+### 🏡 Chore
+
+- **release:** V1.0.4 ([16b3647](https://github.com/Zadigo/nuxt-authentication/commit/16b3647))
+
+### ❤️ Contributors
+
+- Zadigo ([@Zadigo](https://github.com/Zadigo))
+
 ## v1.1.0
 
 - Create a `useAuthenticatedFetch` composable for authenticated fetch requests
