@@ -1,8 +1,6 @@
 <template>
   <section>
     <nuxt-container>
-      {{ a }}
-
       <nuxt-button to="/login">
         Login
       </nuxt-button>
@@ -15,13 +13,9 @@
         Refresh Access Token
       </nuxt-button>
 
-      <nuxt-login>
-        <template #default="{ login: login2 }">
-          <nuxt-button @click="login2">
-            Login via Slot
-          </nuxt-button>
-        </template>
-      </nuxt-login>
+      <nuxt-button to="/via-slot">
+        Login via Slot
+      </nuxt-button>
 
       <nuxt-card>
         {{ userId }} - {{ isAuthenticated }}
@@ -35,6 +29,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useRefreshAccessToken } from '../../src/runtime/composables'
+
 const { userId, isAuthenticated, getProfile } = useUser<{ email: string, username: string }>()
 
 onMounted(async () => {
@@ -43,10 +39,8 @@ onMounted(async () => {
   }
 })
 
-const a = useState('isAuthenticated')
-
 async function refresh() {
-  const { access } = await refreshAccessTokenClient()
-  console.log('access', access)
+  const { accessToken } = await useRefreshAccessToken()
+  console.log('access', accessToken)
 }
 </script>
