@@ -51,7 +51,7 @@ To ensure that all of your requests are authenticated, you can use the `$nuxtAut
 
 ```ts
 const { $nuxtAuthentication } = useNuxtApp()
-const response = await $nuxtAuthentication.fetch('/api/protected-endpoint', { method: 'GET' })
+const response = await $nuxtAuthentication('/api/protected-endpoint', { method: 'GET' })
 ```
 
 > [!NOTE]
