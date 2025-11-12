@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, useCookie, useRuntimeConfig, navigateTo } from '#app'
+import { defineNuxtPlugin, useCookie, useRuntimeConfig, navigateTo, createError } from '#app'
 import type { LoginApiResponse } from './types'
 import { refreshAccessToken } from './utils'
 
@@ -8,17 +8,18 @@ import { refreshAccessToken } from './utils'
  * secured authenticated API requests
  */
 export default defineNuxtPlugin(async (nuxtApp) => {
-  const access = useCookie('access')
-  const refresh = useCookie('refresh')
-
   const config = useRuntimeConfig().public.nuxtAuthentication
+
+  const access = useCookie(config.accessTokenName || 'access')
+  const refresh = useCookie(config.refreshTokenName || 'refresh')
 
   const nuxtAuthentication = $fetch.create<LoginApiResponse>({
     baseURL: config.domain,
-    onRequest({ _request, options, _error }) {
+    onRequest({ options }) {
       options.headers.set('Content-Type', 'application/json')
+
       if (access.value) {
-        options.headers.set('Authorization', `${config.bearerTokenType} ${access.value}`)
+        options.headers.set('Authorization', `${config.bearerTokenType || 'Token'} ${access.value}`)
       }
     },
     async onResponseError({ response }) {

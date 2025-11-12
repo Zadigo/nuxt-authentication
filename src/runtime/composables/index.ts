@@ -102,6 +102,14 @@ export const useNuxtAuthentication = createGlobalState(() => {
   //   intervalReturnValues.verify.pause = pause
   //   intervalReturnValues.verify.resume = resume
   //   intervalReturnValues.verify.verificationActive = isActive
+
+  //   watchDebounced(hasToken, (value) => {
+  //     if (isActive.value && !value) {
+  //       pause()
+  //     } else if (!isActive.value && value) {
+  //       resume()
+  //     }
+  //   })
   // }
 
   return {
@@ -246,15 +254,15 @@ export async function useLogout() {
     return
   }
 
-  const accessToken = useCookie('access')
-  const refreshToken = useCookie('refresh')
+  const config = useRuntimeConfig().public.nuxtAuthentication
+
+  const accessToken = useCookie(config.accessTokenName || 'access')
+  const refreshToken = useCookie(config.refreshTokenName || 'refresh')
 
   accessToken.value = null
   refreshToken.value = null
 
   useState('isAuthenticated').value = false
-
-  const config = useRuntimeConfig().public.nuxtAuthentication
 
   if (config.loginRedirectPath) {
     const router = useRouter()
