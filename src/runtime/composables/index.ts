@@ -200,6 +200,9 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
 
       callback?.(data)
 
+      usernameField.value = ''
+      password.value = ''
+
       if (config.loginRedirectPath) {
         const router = useRouter()
         await router.push(config.loginRedirectPath)
