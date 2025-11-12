@@ -36,14 +36,34 @@ Install the module to your Nuxt application with one command:
 npx nuxi module add nuxt-authentication
 ```
 
-That's it! You can now use Nuxt Authentication in your Nuxt app ✨
-```bash
-npx nuxi module add nuxt-authentication
+Then add the `useNuxtAuthentication` composable to your `app.vue` file to ensure that the `isAuthenticated` global state is populated on app load:
+
+```vue
+<script lang="ts" setup>
+const { hasToken, isAuthenticated } = useNuxtAuthentication()
+</script>
 ```
+
+```ts
 
 That's it! You can now use Nuxt Authentication in your Nuxt app ✨
 
 ## Composables
+
+### Checking for tokens
+
+The `useNuxtAuthentication` composable can be used to check for the presence of authentication tokens:
+
+```vue
+<script lang="ts" setup>
+const { hasToken, isAuthenticated } = useNuxtAuthentication()
+</script>
+```
+
+> ![NOTE]
+> The `hasToken` property indicates only if there is an access token present, while the cookie
+> The `isAuthenticated` property indicates whether the user is authenticated or not based on whether the `isAuthenticated` state has been set to `true` or `false`.
+> The presence of a token does not necessarily mean that the user is authenticated, as the token could be expired or invalid.
 
 ### Sending authenticated requests
 
@@ -70,6 +90,36 @@ const { userId, isAuthenticated } = useUser()
 `usernameField`
 
 The name of the field to be used to send the username (or email) to the backend.
+
+__Renderless component__
+
+You can also use the `<nuxt-login>` renderless component to create a custom login wrapper for your own UI:
+
+```vue
+<template>
+  <section>
+    <nuxt-container>
+      <nuxt-card>
+        <nuxt-input v-model="username" placeholder="Email" />
+        <nuxt-input v-model="password" placeholder="Password" />
+
+        <nuxt-login v-model:username-field="username" v-model:password-field="password">
+          <template #default="{ login: login }">
+            <nuxt-button @click="() => login()">
+              Login via Slot
+            </nuxt-button>
+          </template>
+        </nuxt-login>
+      </nuxt-card>
+    </nuxt-container>
+  </section>
+</template>
+
+<script lang="ts" setup>
+const username = ref('')
+const password = ref('')
+</script>
+```
 
 ### Logout
 

@@ -1,6 +1,18 @@
+## v1.1.0
+
+- Create a `useAuthenticatedFetch` composable for authenticated fetch requests
+
+## v1.0.5
+
+- Fix issue with `isAuthenticated` state not updating correctly
+- Create a `useNuxtAuthentication` composable setting up the package configuration at the Nuxt app level
+
 ## v1.0.4
 
 [compare changes](https://github.com/Zadigo/nuxt-authentication/compare/v1.0.4...v1.0.4)
+
+- Fix typo on README
+
 
 ## v1.0.3
 
