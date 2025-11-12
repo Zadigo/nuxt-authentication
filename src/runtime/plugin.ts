@@ -28,6 +28,11 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         if (config.strategy === 'renew' && refresh.value) {
           const { access: newAccess } = await refreshAccessToken(refresh.value)
           access.value = newAccess
+        } else if (config.strategy === 'fail') {
+          createError({
+            statusCode: 401,
+            statusMessage: 'Authentication failed. Please log in again.'
+          })
         } else {
           refresh.value = null
           await nuxtApp.runWithContext(() => navigateTo(config.loginRedirectPath || '/'))
