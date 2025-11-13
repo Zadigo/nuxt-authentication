@@ -54,6 +54,18 @@ export const useNuxtAuthentication = createGlobalState(() => {
        * @default false
        */
       isAuthenticated: ref(false),
+      /**
+       * Function which can be used to verify the access token
+       * when the Nuxt app or page is mounted
+       * @param _verificationKey : What key to check in the response to consider the token invalid
+       * @param _verificationValue : What to check for in the response in order to consider the token invalid
+       */
+      verify: async (_verificationKey?: string, _verificationValue?: string) => { },
+      /**
+       * Whether the token has been verified
+       * @default false
+       */
+      tokenVerified: ref(false)
       // ...intervalReturnValues
     }
   }
