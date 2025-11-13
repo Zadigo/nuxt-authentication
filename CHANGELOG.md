@@ -1,3 +1,15 @@
+## v1.0.6
+
+[compare changes](https://github.com/Zadigo/nuxt-authentication/compare/v1.0.5...v1.0.6)
+
+### 🏡 Chore
+
+- **release:** V1.0.5 ([33da074](https://github.com/Zadigo/nuxt-authentication/commit/33da074))
+
+### ❤️ Contributors
+
+- Zadigo ([@Zadigo](https://github.com/Zadigo))
+
 ## v1.0.5
 
 [compare changes](https://github.com/Zadigo/nuxt-authentication/compare/v1.0.4...v1.0.5)
