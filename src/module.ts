@@ -63,17 +63,17 @@ export interface ModuleOptions {
    * Verify token validity on backend side
    * @default false
    */
-  // verifyToken: boolean
-  /**
-   * Verify endpoint on the backend
-   * @default '/api/token/verify'
-   */
-  // verifyEndpoint?: string
+  autoVerifyToken: boolean
   /**
    * Interval in seconds to verify token validity
    * @default 60
    */
-  // verifyInterval?: number
+  autoVerifyTokenInterval?: number
+  /**
+   * Verify endpoint on the backend
+   * @default '/api/token/verify'
+   */
+  verifyEndpoint?: string
 }
 
 declare module '@nuxt/schema' {
@@ -105,7 +105,10 @@ export default defineNuxtModule<ModuleOptions>({
     strategy: 'renew',
     bearerTokenType: 'Token',
     accessTokenName: 'access',
-    refreshTokenName: 'refresh'
+    refreshTokenName: 'refresh',
+    verifyEndpoint: '/api/token/verify',
+    autoVerifyToken: false,
+    autoVerifyTokenInterval: 60
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)

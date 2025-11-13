@@ -1,6 +1,6 @@
-import { useRuntimeConfig } from '#app'
+import { createError, useRuntimeConfig } from '#app'
 import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useRouter, useState } from '#imports'
-import { createGlobalState, useCounter, useThrottleFn } from '@vueuse/core'
+import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
 import type { LoginApiResponse, Nullable, TokenRefreshApiResponse } from '../types'
@@ -10,10 +10,18 @@ import type { LoginApiResponse, Nullable, TokenRefreshApiResponse } from '../typ
 /**
  * Global state to manage authentication status. This composable
  * should be ideally first used in `app.vue` to initialize the state.
- * @private
+ * @param verificationKey : What key to check in the response to consider the token invalid
+ * @param verificationValue : What to check for in the response in order to consider the token invalid
+ * @version 1.0.0-alpha.1
+ * @example ```ts
+ * // In app.vue
+ * const { verify } = useNuxtAuthentication('detail', 'Token is invalid or expired')
+ * onMounted(async () => {
+ *   await verify()
+ * })
+ * ```
  */
-// params: verificationValue : What to check for in the response in order to consider the token invalid
-export const useNuxtAuthentication = createGlobalState(() => {
+export const useNuxtAuthentication = createGlobalState((verificationKey?: string, verificationValue?: string) => {
   const config = useRuntimeConfig().public.nuxtAuthentication
   const accessToken = useCookie(config.accessTokenName || 'access')
 
@@ -66,38 +74,61 @@ export const useNuxtAuthentication = createGlobalState(() => {
    * Verify
    */
 
+  const [tokenVerified, _] = useToggle(false)
+  const { $nuxtAuthentication } = useNuxtApp()
+
+  // If the verification fails, for future requests
+  // we will skip the verification until the next token change
+  const skipVerification = ref<boolean>(false)
+
+  async function verify() {
+    if (hasToken.value && !skipVerification.value) {
+      try {
+        const response = await $nuxtAuthentication<Record<string, string>>(config.verifyEndpoint || '/api/token/verify', {
+          method: 'POST',
+          body: { token: accessToken.value },
+          onRequestError() {
+            skipVerification.value = true
+          }
+        })
+
+        // The verificaationKey and verificationValue are used to get the
+        // from the response that indicates whether the token not valid.
+        // e.g. { detail: 'Token is invalid or expired' } which can then
+        // determine verificationKey = 'detail' and verificationValue = 'Token is invalid or expired'
+        if (isDefined(verificationKey) && isDefined(verificationValue)) {
+          const value = response[verificationKey]
+
+          if (isDefined(value) && value === verificationValue) {
+            await useLogout()
+
+            if (config.strategy === 'login') {
+              const router = useRouter()
+              await router.push(config.login || '/login')
+            } else if (config.strategy === 'renew') {
+              const { renew } = await useRefreshAccessToken()
+              await renew()
+            } else {
+              createError({
+                statusCode: 401,
+                statusMessage: 'Authentication required'
+              })
+            }
+          }
+
+          isAuthenticated.value = true
+        }
+      } catch {
+        isAuthenticated.value = false
+      }
+    }
+  }
+
   // if (config.verifyToken) {
-  //   const { $nuxtAuthentication } = useNuxtApp()
+  //
   //   const { counter, pause, resume, isActive } = useInterval(config.verifyInterval, {
   //     controls: true,
-  //     callback: async () => {
-  //       try {
-  //         const response = await $nuxtAuthentication<Record<string, string>>(config.verifyEndpoint || '/api/token/verify', {
-  //           method: 'POST',
-  //           body: {
-  //             token: accessToken.value
-  //           }
-  //         })
-
-  //         const value = response[verificationKey]
-
-  //         if (value === verificationValue) {
-  //           if (config.strategy === 'login') {
-  //             const router = useRouter()
-  //             await router.push(config.login || '/login')
-  //           } else if (config.strategy === 'renew') {
-  //             const { renew } = await useRefreshAccessToken()
-  //             await renew()
-  //           } else {
-  //             createError()
-  //           }
-  //         }
-
-  //         isAuthenticated.value = true
-  //       } catch {
-  //         isAuthenticated.value = false
-  //       }
-  //     }
+  //     callback: async () => await verify()
   //   })
 
   //   intervalReturnValues.verify.counter = counter
@@ -126,16 +157,26 @@ export const useNuxtAuthentication = createGlobalState(() => {
      * @default false
      */
     isAuthenticated,
+    /**
+     * Function used to verify the access token
+     */
+    verify,
+    /**
+     * Whether the token has been verified
+     * @default false
+     */
+    tokenVerified
     // ...intervalReturnValues
   }
 })
 
 /**
  * Function used to login the user in the frontend
+ * @param redirectPath Custom redirect path after login that overrides the one in the config
  * @param usernameFieldName - The field name used for the username, either 'email' or 'username'
  * @param throttle - Throttle time in milliseconds which limits how often the login function can be called
  */
-export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000) {
+export function useLogin<T extends LoginApiResponse>(redirectPath?: string, usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000) {
   if (import.meta.server) {
     return {
       /**
@@ -180,6 +221,7 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
   const config = useRuntimeConfig().public.nuxtAuthentication
 
   const accessToken = useCookie(config.accessTokenName || 'access', { sameSite: 'strict', secure: true })
+  // maxAge: 60 * 60 * 24 * 7
   const refreshToken = useCookie(config.refreshTokenName || 'refresh', { sameSite: 'strict', secure: true })
 
   async function login(callback?: (data: T) => void) {
@@ -207,7 +249,7 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
 
       if (config.loginRedirectPath) {
         const router = useRouter()
-        await router.push(config.loginRedirectPath)
+        await router.push(redirectPath || config.loginRedirectPath)
       }
     }
   }
@@ -253,8 +295,9 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
 
 /**
  * Function used to logout the user
+ * @param redirectPath Custom redirect path after logout that overrides the one in the config
  */
-export async function useLogout() {
+export async function useLogout(redirectPath?: string) {
   if (import.meta.server) {
     return
   }
@@ -271,7 +314,7 @@ export async function useLogout() {
 
   if (config.loginRedirectPath) {
     const router = useRouter()
-    await router.push(config.loginRedirectPath)
+    await router.push(redirectPath || config.loginRedirectPath)
   }
 }
 
@@ -354,8 +397,7 @@ export function useUser<P>() {
  * @description You are responseble for setting the new
  * access token in the cookie after calling this function
  *
- * @param throttle - Throttle time in milliseconds whcih limits
- * how often the token can be refreshed
+ * @param throttle - Throttle time in milliseconds whcih limits how often the token can be refreshed
  */
 export async function useRefreshAccessToken(throttle: number = 5000) {
   if (import.meta.server) {
