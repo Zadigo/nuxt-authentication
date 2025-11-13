@@ -187,11 +187,11 @@ export const useNuxtAuthentication = createGlobalState(() => {
 
 /**
  * Function used to login the user in the frontend
- * @param redirectPath Custom redirect path after login that overrides the one in the config
  * @param usernameFieldName - The field name used for the username, either 'email' or 'username'
  * @param throttle - Throttle time in milliseconds which limits how often the login function can be called
+ * @param redirectPath Custom redirect path after login that overrides the one in the config
  */
-export function useLogin<T extends LoginApiResponse>(redirectPath?: string, usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000) {
+export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000, redirectPath?: string) {
   if (import.meta.server) {
     return {
       /**
