@@ -77,7 +77,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
    * Verification
    */
 
-  const [tokenVerified, _] = useToggle(false)
+  const [tokenVerified, toggleTokenVerified] = useToggle(false)
   const { $nuxtAuthentication } = useNuxtApp()
 
   // If the verification fails, for future requests
