@@ -1,5 +1,6 @@
 import { addPlugin, addImports, createResolver, defineNuxtModule, installModule, addComponent } from '@nuxt/kit'
 import { defu } from 'defu'
+import type { Nullable } from './runtime/types'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -63,17 +64,27 @@ export interface ModuleOptions {
    * Verify token validity on backend side
    * @default false
    */
-  autoVerifyToken: boolean
+  // autoVerifyToken: boolean
   /**
    * Interval in seconds to verify token validity
    * @default 60
    */
-  autoVerifyTokenInterval?: number
+  // autoVerifyTokenInterval?: number
   /**
    * Verify endpoint on the backend
    * @default '/api/token/verify'
    */
   verifyEndpoint?: string
+  /**
+   * Access token max age in seconds
+   * @default null
+   */
+  accessTokenMaxAge?: Nullable<number>
+  /**
+   * Refresh token max age in seconds
+   * @default 7 days (604800 seconds)
+   */
+  refreshTokenMaxAge?: Nullable<number>
 }
 
 declare module '@nuxt/schema' {
@@ -107,8 +118,10 @@ export default defineNuxtModule<ModuleOptions>({
     accessTokenName: 'access',
     refreshTokenName: 'refresh',
     verifyEndpoint: '/api/token/verify',
-    autoVerifyToken: false,
-    autoVerifyTokenInterval: 60
+    // autoVerifyToken: false,
+    // autoVerifyTokenInterval: 60,
+    accessTokenMaxAge: null,
+    refreshTokenMaxAge: 60 * 60 * 24 * 7 // 7 days
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)

@@ -10,18 +10,9 @@ import type { LoginApiResponse, Nullable, TokenRefreshApiResponse } from '../typ
 /**
  * Global state to manage authentication status. This composable
  * should be ideally first used in `app.vue` to initialize the state.
- * @param verificationKey : What key to check in the response to consider the token invalid
- * @param verificationValue : What to check for in the response in order to consider the token invalid
  * @version 1.0.0-alpha.1
- * @example ```ts
- * // In app.vue
- * const { verify } = useNuxtAuthentication('detail', 'Token is invalid or expired')
- * onMounted(async () => {
- *   await verify()
- * })
- * ```
  */
-export const useNuxtAuthentication = createGlobalState((verificationKey?: string, verificationValue?: string) => {
+export const useNuxtAuthentication = createGlobalState(() => {
   const config = useRuntimeConfig().public.nuxtAuthentication
   const accessToken = useCookie(config.accessTokenName || 'access')
 
@@ -71,7 +62,7 @@ export const useNuxtAuthentication = createGlobalState((verificationKey?: string
   const isAuthenticated = useState<boolean>('isAuthenticated', () => false)
 
   /**
-   * Verify
+   * Verification
    */
 
   const [tokenVerified, _] = useToggle(false)
@@ -81,7 +72,7 @@ export const useNuxtAuthentication = createGlobalState((verificationKey?: string
   // we will skip the verification until the next token change
   const skipVerification = ref<boolean>(false)
 
-  async function verify() {
+  async function verify(verificationKey?: string, verificationValue?: string) {
     if (hasToken.value && !skipVerification.value) {
       try {
         const response = await $nuxtAuthentication<Record<string, string>>(config.verifyEndpoint || '/api/token/verify', {
@@ -158,7 +149,17 @@ export const useNuxtAuthentication = createGlobalState((verificationKey?: string
      */
     isAuthenticated,
     /**
-     * Function used to verify the access token
+     * Function which can be used to verify the access token
+     * when the Nuxt app or page is mounted
+     * @param verificationKey : What key to check in the response to consider the token invalid
+     * @param verificationValue : What to check for in the response in order to consider the token invalid
+     * @example ```ts
+     * // In app.vue
+     * const { verify } = useNuxtAuthentication()
+     * onMounted(async () => {
+     *   await verify('detail', 'Token is invalid or expired')
+     * })
+     * ```
      */
     verify,
     /**
@@ -220,9 +221,8 @@ export function useLogin<T extends LoginApiResponse>(redirectPath?: string, user
 
   const config = useRuntimeConfig().public.nuxtAuthentication
 
-  const accessToken = useCookie(config.accessTokenName || 'access', { sameSite: 'strict', secure: true })
-  // maxAge: 60 * 60 * 24 * 7
-  const refreshToken = useCookie(config.refreshTokenName || 'refresh', { sameSite: 'strict', secure: true })
+  const accessToken = useCookie(config.accessTokenName || 'access', { sameSite: 'strict', secure: true, maxAge: config.accessTokenMaxAge || undefined })
+  const refreshToken = useCookie(config.refreshTokenName || 'refresh', { sameSite: 'strict', secure: true, maxAge: config.refreshTokenMaxAge || undefined })
 
   async function login(callback?: (data: T) => void) {
     const data = await $fetch<T>(config.accessEndpoint || '/api/token/access', {

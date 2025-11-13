@@ -10,13 +10,12 @@
 
 - Zadigo ([@Zadigo](https://github.com/Zadigo))
 
-## v1.1.0
-
-- Create a `useAuthenticatedFetch` composable for authenticated fetch requests
-
-## v1.0.5
+### 🐛 Bug Fixes
 
 - Fix issue with `isAuthenticated` state not updating correctly
+
+### ✨ Features
+
 - Create a `useNuxtAuthentication` composable setting up the package configuration at the Nuxt app level
 
 ## v1.0.4
