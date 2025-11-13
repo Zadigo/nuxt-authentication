@@ -1,11 +1,11 @@
 export default defineNuxtConfig({
-  devtools: { enabled: true },
   modules: [
     '../src/module',
     '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/ui'
   ],
+  devtools: { enabled: true },
   runtimeConfig: {
     public: {
       nuxtAuthentication: {
@@ -16,7 +16,10 @@ export default defineNuxtConfig({
         login: '/login',
         loginRedirectPath: '/',
         strategy: 'renew',
-        bearerTokenType: 'Token'
+        bearerTokenType: 'Token',
+        verifyEndpoint: '/auth/v1/token/verify/',
+        accessTokenMaxAge: 15 * 60, // 15 minutes
+        refreshTokenMaxAge: 7 * 24 * 60 * 60 // 7 days
       }
     }
   },
