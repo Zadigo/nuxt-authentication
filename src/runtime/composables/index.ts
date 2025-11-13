@@ -117,12 +117,14 @@ export const useNuxtAuthentication = createGlobalState(() => {
                 statusMessage: 'Authentication required'
               })
             }
+          } else {
+            isAuthenticated.value = true
+            toggleTokenVerified(true)
           }
-
-          isAuthenticated.value = true
         }
       } catch {
         isAuthenticated.value = false
+        toggleTokenVerified(false)
       }
     }
   }
