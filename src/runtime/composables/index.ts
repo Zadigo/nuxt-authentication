@@ -346,6 +346,11 @@ export function useUser<P>() {
   if (import.meta.server) {
     return {
       /**
+       * Access token of the user
+       * @default null
+       */
+      accessToken: shallowReadonly(ref<string | null>(null)),
+      /**
        * User ID of the authenticated user
        */
       userId: computed(() => null),
