@@ -1,5 +1,5 @@
 import { createError, useRuntimeConfig } from '#app'
-import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useRouter, useState } from '#imports'
+import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useRouter, useState, shallowReadonly } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
@@ -387,6 +387,11 @@ export function useUser<P>() {
   })
 
   return {
+    /**
+     * Access token of the user
+     * @default null
+     */
+    accessToken: shallowReadonly(accessToken),
     /**
      * User ID of the authenticated user
      */
