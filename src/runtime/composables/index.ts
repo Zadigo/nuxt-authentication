@@ -1,5 +1,4 @@
-import { createError, useRuntimeConfig } from '#app'
-import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useRouter, useState, shallowReadonly } from '#imports'
+import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useMemoize, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
@@ -165,8 +164,8 @@ export const useNuxtAuthentication = createGlobalState(() => {
     /**
      * Function which can be used to verify the access token
      * when the Nuxt app or page is mounted
-     * @param verificationKey : What key to check in the response to consider the token invalid
-     * @param verificationValue : What to check for in the response in order to consider the token invalid
+     * @param _verificationKey What key to check in the response to consider the token invalid
+     * @param _verificationValue What to check for in the response in order to consider the token invalid
      * @example ```ts
      * // In app.vue
      * const { verify } = useNuxtAuthentication()
@@ -324,7 +323,7 @@ export async function useLogout(redirectPath?: string) {
   accessToken.value = null
   refreshToken.value = null
 
-  useState('isAuthenticated').value = false
+  useState<boolean>('isAuthenticated').value = false
 
   if (config.loginRedirectPath) {
     const router = useRouter()
