@@ -323,7 +323,7 @@ export async function useLogout(redirectPath?: string) {
   accessToken.value = null
   refreshToken.value = null
 
-  useState('isAuthenticated').value = false
+  useState<boolean>('isAuthenticated').value = false
 
   if (config.loginRedirectPath) {
     const router = useRouter()
