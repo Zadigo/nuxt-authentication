@@ -1,5 +1,4 @@
-import { createError, useRuntimeConfig } from '#app'
-import { computed, isDefined, ref, useCookie, useMemoize, useNuxtApp, useRouter, useState, shallowReadonly } from '#imports'
+import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useMemoize, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'

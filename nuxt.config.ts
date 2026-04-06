@@ -6,5 +6,5 @@ export default defineNuxtConfig({
     '@nuxt/scripts',
     '@vueuse/nuxt'
   ],
-  compatibilityDate: '2025-11-10'
+  compatibilityDate: '2026-04-07'
 })

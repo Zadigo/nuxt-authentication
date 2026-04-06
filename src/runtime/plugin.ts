@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, useCookie, useRuntimeConfig, navigateTo, createError } from '#app'
+import { defineNuxtPlugin, useCookie, useRuntimeConfig, navigateTo, createError } from '#imports'
 import type { LoginApiResponse } from './types'
 import { refreshAccessToken } from './utils'
 
