@@ -9,7 +9,6 @@ import type { LoginApiResponse, Nullable, TokenRefreshApiResponse } from '../typ
 /**
  * Global state to manage authentication status. This composable
  * should be ideally first used in `app.vue` to initialize the state.
- * @version 1.0.0-alpha.1
  */
 export const useNuxtAuthentication = createGlobalState(() => {
   const config = useRuntimeConfig().public.nuxtAuthentication
@@ -56,8 +55,8 @@ export const useNuxtAuthentication = createGlobalState(() => {
       /**
        * Function which can be used to verify the access token
        * when the Nuxt app or page is mounted
-       * @param _verificationKey : What key to check in the response to consider the token invalid
-       * @param _verificationValue : What to check for in the response in order to consider the token invalid
+       * @param _verificationKey : The key to check in the response to validate the repsonse token
+       * @param _verificationValue : The value to check in the response in order to consider the token invalid
        */
       verify: async (_verificationKey?: string, _verificationValue?: string) => { },
       /**
@@ -94,7 +93,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
           }
         })
 
-        // The verificaationKey and verificationValue are used to get the
+        // The verificationKey and verificationValue are used to get the
         // from the response that indicates whether the token not valid.
         // e.g. { detail: 'Token is invalid or expired' } which can then
         // determine verificationKey = 'detail' and verificationValue = 'Token is invalid or expired'

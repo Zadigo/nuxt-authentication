@@ -48,7 +48,8 @@
     "lint:oxc": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit"
+    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
+    "test:release": "npm run lint & npm run test && npm run prepack && changelogen --release --patch --no-commit --no-tag"
   },
   "dependencies": {
     "@nuxt/kit": "^4.4.2",
@@ -74,8 +75,8 @@
     "changelogen": "^0.6.2",
     "eslint": "^10.2.0",
     "nuxt": "^4.4.2",
-    "oxfmt": "^0.43.0",
-    "oxlint": "^1.58.0",
+    "oxfmt": "^0.44.0",
+    "oxlint": "^1.59.0",
     "oxlint-tsgolint": "^0.20.0",
     "tailwindcss": "^4.2.2",
     "typescript": "~6.0.2",
