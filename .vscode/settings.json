@@ -1,3 +1,5 @@
 {
-  "eslint.experimental.useFlatConfig": true
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "always"
+  }
 }

@@ -97,15 +97,11 @@ declare module '@nuxt/schema' {
   }
 
   interface NuxtOptions {
-    nuxtAuthentication?: ModuleOptions
+    nuxtAuthentication: ModuleOptions
   }
 }
 
 export default defineNuxtModule<ModuleOptions>({
-  meta: {
-    name: 'nuxt-authentication',
-    configKey: 'nuxtAuthentication',
-  },
   // Default configuration options of the Nuxt module
   defaults: {
     enabled: true,
@@ -122,6 +118,10 @@ export default defineNuxtModule<ModuleOptions>({
     // autoVerifyTokenInterval: 60,
     accessTokenMaxAge: null,
     refreshTokenMaxAge: 60 * 60 * 24 * 7 // 7 days
+  },
+  meta: {
+    name: 'nuxt-authentication',
+    configKey: 'nuxtAuthentication',
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)

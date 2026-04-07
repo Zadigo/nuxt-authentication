@@ -7,7 +7,9 @@
     "eslint",
     "node",
     "oxc",
-    "typescript"
+    "node",
+    "vitest",
+    "import"
   ],
   "categories": {
     "correctness": "error"
