@@ -234,30 +234,6 @@ export interface JWTResponseData {
  * Composable used to check if the user is logged in
  */
 export function useUser<P>() {
-  // if (import.meta.server) {
-  //   return {
-  //     /**
-  //      * Access token of the user
-  //      * @default null
-  //      */
-  //     accessToken: shallowReadonly(ref<string | null>(null)),
-  //     /**
-  //      * User ID of the authenticated user
-  //      */
-  //     userId: computed(() => null),
-  //     /**
-  //      * Whether the user is authenticated
-  //      * @default false
-  //      */
-  //     isAuthenticated: ref(false),
-  //     /**
-  //      * Function to get the user's profile
-  //      * @param _path - The API path to fetch the user's profile
-  //      */
-  //     getProfile: async (_path: NitroFetchRequest) => null as Nullable<P>
-  //   }
-  // }
-
   const config = useRuntimeConfig().public.nuxtAuthentication
   const accessToken = useCookie(config.accessTokenName || 'access')
   const isAuthenticated = useState('isAuthenticated', () => false)
