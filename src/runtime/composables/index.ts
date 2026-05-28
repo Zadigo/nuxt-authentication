@@ -1,8 +1,9 @@
 import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useMemoize, useNuxtApp, useRouter, useRuntimeConfig, useState, shallowRef } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
+import { refreshAccessToken } from '../utils/index'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
-import type { LoginApiResponse, TokenRefreshApiResponse } from '../types'
+import type { LoginApiResponse } from '../types'
 
 // import { useInterval } from '@vueuse/core'
 
@@ -296,19 +297,8 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
   const refreshToken = useCookie(config.refreshTokenName || 'refresh')
 
   async function renew() {
-    try {
-      const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint || '/api/token/refresh', {
-        baseURL: config.domain,
-        method: 'POST',
-        body: {
-          refresh: refreshToken.value
-        }
-      })
-  
-      accessToken.value = response.access
-    } catch (error) {
-      console.error('Failed to refresh access token:', error)
-    }
+    const { access } = await refreshAccessToken(refreshToken.value)
+    accessToken.value = access
   }
 
   return {

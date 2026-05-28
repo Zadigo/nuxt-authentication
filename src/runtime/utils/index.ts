@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#imports'
-import type { TokenRefreshApiResponse, Undefineable } from '../types'
+import type { TokenRefreshApiResponse, Undefineable, Emptyable } from '../types'
 
 /**
  * @private
@@ -27,23 +27,24 @@ export function getUrl(url: string, path: Undefineable<string>) {
  * token for the user
  * @param refresh - The refresh token
  */
-export async function refreshAccessToken(refresh: Undefineable<string>) {
-  if (import.meta.client) {
+export async function refreshAccessToken(refresh: Emptyable<string>) {
+  try {
+    const config = useRuntimeConfig().public.nuxtAuthentication
+    const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint || '/api/token/refresh', {
+      baseURL: config.domain,
+      method: 'POST',
+      body: {
+        refresh
+      }
+    })
+
+    return {
+      access: response.access
+    }
+  } catch (error) {
+    console.error('Failed to refresh access token:', error)
     return {
       access: null
     }
-  }
-
-  const config = useRuntimeConfig().public.nuxtAuthentication
-  const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint || '/api/token/refresh', {
-    baseURL: config.domain,
-    method: 'POST',
-    body: {
-      refresh
-    }
-  })
-
-  return {
-    access: response.access
   }
 }
