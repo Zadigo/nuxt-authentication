@@ -75,31 +75,6 @@ export const useNuxtAuthentication = createGlobalState(() => {
     }
   }
 
-  // if (import.meta.client && hasToken.value && config.autoVerifyToken) {
-  //   const { counter, pause, resume, , isActive } = useInterval(config.autoVerifyTokenInterval * 1000, {
-  //     controls: true,
-  //     // callback: async () => await verify()
-  //   })
-
-  //   whenever(() => counter.value === 0, async () => {
-  //     await verify()
-  //     resume()
-  //   })
-
-  //   // intervalReturnValues.verify.counter = counter
-  //   // intervalReturnValues.verify.pause = pause
-  //   // intervalReturnValues.verify.resume = resume
-  //   // intervalReturnValues.verify.verificationActive = isActive
-
-  //   watchDebounced(hasToken, (value) => {
-  //     if (isActive.value && !value) {
-  //       pause()
-  //     } else if (!isActive.value && value) {
-  //       resume()
-  //     }
-  //   })
-  // }
-
   return {
     /**
      * Whether the user has a token stored. This does not mean that
