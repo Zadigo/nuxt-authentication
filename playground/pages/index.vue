@@ -54,7 +54,8 @@ onMounted(async () => {
 })
 
 async function refresh() {
-  const { accessToken } = await useRefreshAccessToken()
-  console.log('access', toValue(accessToken))
+  const { accessToken, renew } = await useRefreshAccessToken()
+  await renew()
+  console.log('Access token refreshed', toValue(accessToken))
 }
 </script>
