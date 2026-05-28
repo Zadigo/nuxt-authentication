@@ -233,8 +233,9 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
 
   const config = useRuntimeConfig().public.nuxtAuthentication
 
-  const accessToken = useCookie(config.accessTokenName || 'access', { sameSite: 'strict', secure: true, maxAge: config.accessTokenMaxAge || undefined })
-  const refreshToken = useCookie(config.refreshTokenName || 'refresh', { sameSite: 'strict', secure: true, maxAge: config.refreshTokenMaxAge || undefined })
+  const cookieOptions = {sameSite: 'strict', secure: true} as const
+  const accessToken = useCookie(config.accessTokenName || 'access', { ...cookieOptions, maxAge: config.accessTokenMaxAge || undefined })
+  const refreshToken = useCookie(config.refreshTokenName || 'refresh', { ...cookieOptions, maxAge: config.refreshTokenMaxAge || undefined })
 
   async function login(callback?: (data: T) => void) {
     try {
