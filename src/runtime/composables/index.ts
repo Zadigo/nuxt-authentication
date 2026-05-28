@@ -237,19 +237,19 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
   const refreshToken = useCookie(config.refreshTokenName || 'refresh', { sameSite: 'strict', secure: true, maxAge: config.refreshTokenMaxAge || undefined })
 
   async function login(callback?: (data: T) => void) {
-    const data = await $fetch<T>(config.accessEndpoint || '/api/token/access', {
-      baseURL: config.domain,
-      method: 'POST',
-      body: {
-        [`${usernameFieldName}`]: usernameField.value,
-        password: password.value
-      },
-      onRequestError() {
-        incrementFailureCount()
-      }
-    })
-
-    if (data) {
+    try {
+      const data = await $fetch<T>(config.accessEndpoint || '/api/token/access', {
+        baseURL: config.domain,
+        method: 'POST',
+        body: {
+          [`${usernameFieldName}`]: usernameField.value,
+          password: password.value
+        },
+        onRequestError() {
+          incrementFailureCount()
+        }
+      })
+  
       accessToken.value = data.access
       refreshToken.value = data.refresh
       useState<boolean>('isAuthenticated').value = true
@@ -263,6 +263,9 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
         const router = useRouter()
         await router.push(redirectPath || config.loginRedirectPath)
       }
+    } catch (error) {
+      incrementFailureCount()
+      console.error('Login failed:', error)
     }
   }
 
