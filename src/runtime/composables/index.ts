@@ -16,58 +16,6 @@ export const useNuxtAuthentication = createGlobalState(() => {
 
   const hasToken = computed(() => isDefined(accessToken) && accessToken.value !== '')
 
-  // const intervalReturnValues = {
-  //   verify: {
-  //     /**
-  //      * Counter for the number of verification attempts
-  //      * @default 0
-  //      */
-  //     counter: ref(0),
-  //     /**
-  //      * Pause the verification interval
-  //      */
-  //     pause: () => { },
-  //     /**
-  //      * Resume the verification interval
-  //      */
-  //     resume: () => { },
-  //     /**
-  //      * Whether the verification interval is active
-  //      * @default false
-  //      */
-  //     verificationActive: ref(false)
-  //   }
-  // }
-
-  if (import.meta.server) {
-    return {
-      /**
-       * Whether the user has a token stored. This does not mean that
-       * the user is authenticated
-       * @default false
-       */
-      hasToken,
-      /**
-       * Whether the user is actually authenticated
-       * @default false
-       */
-      isAuthenticated: ref(false),
-      /**
-       * Function which can be used to verify the access token
-       * when the Nuxt app or page is mounted
-       * @param _verificationKey : The key to check in the response to validate the repsonse token
-       * @param _verificationValue : The value to check in the response in order to consider the token invalid
-       */
-      verify: async (_verificationKey?: string, _verificationValue?: string) => { },
-      /**
-       * Whether the token has been verified
-       * @default false
-       */
-      tokenVerified: ref(false)
-      // ...intervalReturnValues
-    }
-  }
-
   // Creates a global state for isAuthenticated
   const isAuthenticated = useState<boolean>('isAuthenticated', () => false)
 
