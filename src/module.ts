@@ -105,6 +105,7 @@ export default defineNuxtModule<ModuleOptions>({
   // Default configuration options of the Nuxt module
   defaults: {
     enabled: true,
+    domain: '',
     refreshEndpoint: '/api/token/refresh',
     accessEndpoint: '/api/token/access',
     login: '/login',

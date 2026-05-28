@@ -392,19 +392,6 @@ export function useUser<P>() {
  * @param throttle - Throttle time in milliseconds whcih limits how often the token can be refreshed
  */
 export async function useRefreshAccessToken(throttle: number = 5000) {
-  if (import.meta.server) {
-    return {
-      /**
-       * Function used to renew the access token
-       */
-      renew: async () => { },
-      /**
-       * Access token of the user
-       */
-      accessToken: null,
-    }
-  }
-
   const config = useRuntimeConfig().public.nuxtAuthentication
   const accessToken = useCookie(config.accessTokenName || 'access')
   const refreshToken = useCookie(config.refreshTokenName || 'refresh')
