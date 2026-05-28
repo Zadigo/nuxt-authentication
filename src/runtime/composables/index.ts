@@ -1,8 +1,8 @@
-import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useMemoize, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
+import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useMemoize, useNuxtApp, useRouter, useRuntimeConfig, useState, shallowRef } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
-import type { LoginApiResponse, Nullable, TokenRefreshApiResponse } from '../types'
+import type { LoginApiResponse, TokenRefreshApiResponse } from '../types'
 
 // import { useInterval } from '@vueuse/core'
 
@@ -17,7 +17,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
   const hasToken = computed(() => isDefined(accessToken) && accessToken.value !== '')
 
   // Creates a global state for isAuthenticated
-  const isAuthenticated = useState<boolean>('isAuthenticated', () => false)
+  const isAuthenticated = useState<boolean>('isAuthenticated', () => shallowRef(false))
 
   /**
    * Verification
