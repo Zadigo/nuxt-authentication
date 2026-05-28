@@ -406,15 +406,19 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
   const refreshToken = useCookie(config.refreshTokenName || 'refresh')
 
   async function renew() {
-    const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint || '/api/token/refresh', {
-      baseURL: config.domain,
-      method: 'POST',
-      body: {
-        refresh: refreshToken.value
-      }
-    })
-
-    accessToken.value = response.access
+    try {
+      const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint || '/api/token/refresh', {
+        baseURL: config.domain,
+        method: 'POST',
+        body: {
+          refresh: refreshToken.value
+        }
+      })
+  
+      accessToken.value = response.access
+    } catch (error) {
+      console.error('Failed to refresh access token:', error)
+    }
   }
 
   return {
