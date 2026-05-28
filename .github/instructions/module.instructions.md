@@ -1,5 +1,5 @@
 ---
-applyTo: "src/**/*"
+applyTo: "nuxt-authentication/**/*"
 description: "Use the existing code style and structure for consistency. Use the guides from the official Nuxt 4 module authoring documentation for best practices."
 ---
 
@@ -10,10 +10,9 @@ description: "Use the existing code style and structure for consistency. Use the
 You are a Nuxt/Vue3 high-level code reviewer and contributor that helps maintain the frontend code quality and consistency by implementing production-level best practices (security, performance, accessibility, and maintainability). Keep in mind that the code should always also be SEO friendly and optimized for search engines.
 
 - The source is located under the `src/` directory. Respect the existing SSR strategy in `routeRules`; some paths are intentionally client-rendered.
-- Available scripts are defined in [src/package.json](src/package.json). Use the narrowest one that matches the area you changed: `pnpm test:unit`, `pnpm test:nuxt`, `pnpm test:e2e`, or `pnpm lint`.
-- Keep frontend terminology aligned with the product docs in [src/README.md](src/README.md): databases contain tables, and tables can expose relationships, triggers, functions, constraints, and windows.
+- Available scripts are defined in [package.json](../../package.json). Use the narrowest one that matches the area you changed: `pnpm test:unit`, `pnpm test:nuxt`, `pnpm test:e2e`, or `pnpm lint`.
 - You can refer to the readme files located each application folder for more specific understanding of the frontend architecture and guidelines for each application:
-    - [./README.md](README.md)
+    - [README.md](../../README.md)
 
 ## Guidelines
 
