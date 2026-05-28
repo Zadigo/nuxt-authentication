@@ -44,7 +44,7 @@ export interface ModuleOptions {
    *
    * @default 'renew'
    */
-  strategy?: 'renew' | 'login' | 'fail'
+  strategy?: 'renew' | 'login' | 'fail' | (string & {})
   /**
    * Optional bearer token type
    * @default 'Token'
@@ -127,7 +127,7 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
 
     // Deep-merge nuxt module options + user custom gtm optionss filling missing fields
-    const moduleOptions: ModuleOptions = defu(nuxt.options.runtimeConfig.public.nuxtAuthentication, options)
+    const moduleOptions = defu(nuxt.options.runtimeConfig.public.nuxtAuthentication, options)
 
     // Transpile and alias runtime
     const runtimeDir = resolver.resolve('./runtime')
