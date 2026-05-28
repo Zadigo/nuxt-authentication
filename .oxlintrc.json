@@ -20,6 +20,6 @@
   },
   "options": {
     "typeAware": true,
-    "typeCheck": true 
+    "typeCheck": false 
   }
 }
