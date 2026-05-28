@@ -19,7 +19,9 @@ export default defineNuxtConfig({
         bearerTokenType: 'Token',
         verifyEndpoint: '/auth/v1/token/verify/',
         accessTokenMaxAge: 15 * 60, // 15 minutes
-        refreshTokenMaxAge: 7 * 24 * 60 * 60 // 7 days
+        refreshTokenMaxAge: 7 * 24 * 60 * 60, // 7 days
+        // autoVerifyToken: true,
+        // autoVerifyTokenInterval: 30 // 1 minute
       }
     }
   },

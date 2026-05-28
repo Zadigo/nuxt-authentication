@@ -26,9 +26,11 @@
       </nuxt-card>
 
       <nuxt-card class="max-w-2xl mx-auto mt-5 space-y-4">
-        <p>User ID: {{ userId }}</p>
-        <p>Authenticated: {{ isAuthenticated }}</p>
-        <p>Token verified: {{ tokenVerified }}</p>
+        <client-only>
+          <p>User ID: {{ userId }}</p>
+          <p>Authenticated: {{ isAuthenticated }}</p>
+          <p>Token verified: {{ tokenVerified }}</p>
+        </client-only>
 
         <nuxt-button color="error" @click="() => useLogout()">
           <icon name="i-lucide:log-out" />
