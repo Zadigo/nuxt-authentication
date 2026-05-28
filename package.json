@@ -47,7 +47,7 @@
     "lint": "oxlint lint .",
     "lint:eslint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest watch",
+    "test:watch": "vitest watch --coverage",
     "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
     "test:release": "npm run lint & npm run test && npm run prepack && changelogen --release --patch --no-commit --no-tag"
   },
@@ -71,6 +71,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "@types/node": "latest",
     "@unhead/vue": "^3.1.1",
+    "@vitest/coverage-v8": "^4.1.7",
     "@vueuse/nuxt": "^14.3.0",
     "changelogen": "^0.6.2",
     "eslint": "^10.4.0",
@@ -82,5 +83,6 @@
     "typescript": "~6.0.3",
     "vitest": "^4.1.7",
     "vue-tsc": "^3.3.2"
-  }
+  },
+  "packageManager": "pnpm@11.4.0+sha512.f0febc7e37552ab485494a914241b338e0b3580b93d54ce31f00933015880863129038a1b4ae4e414a0ee63ac35bf21197e990172c4a68256450b5636310968f"
 }
