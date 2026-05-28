@@ -405,7 +405,7 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
   const accessToken = useCookie(config.accessTokenName || 'access')
   const refreshToken = useCookie(config.refreshTokenName || 'refresh')
 
-  async function _renew() {
+  async function renew() {
     const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint || '/api/token/refresh', {
       baseURL: config.domain,
       method: 'POST',
@@ -417,13 +417,11 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
     accessToken.value = response.access
   }
 
-  const renew = useThrottleFn(_renew, throttle)
-
   return {
     /**
      * Function used to renew the access token
      */
-    renew,
+    renew: useThrottleFn(renew, throttle),
     /**
      * Access token of the user
      */
