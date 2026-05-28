@@ -1,4 +1,4 @@
-import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useMemoize, useNuxtApp, useRouter, useRuntimeConfig, useState, shallowRef } from '#imports'
+import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useMemoize, useNuxtApp, useRouter, useRuntimeConfig, useState, shallowRef, preloadRouteComponents } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import { refreshAccessToken } from '../utils/index'
@@ -128,6 +128,10 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
   const cookieOptions = {sameSite: 'strict', secure: true} as const
   const accessToken = useCookie(config.accessTokenName || 'access', { ...cookieOptions, maxAge: config.accessTokenMaxAge || undefined })
   const refreshToken = useCookie(config.refreshTokenName || 'refresh', { ...cookieOptions, maxAge: config.refreshTokenMaxAge || undefined })
+
+  if (config.loginRedirectPath) {
+    void preloadRouteComponents(config.loginRedirectPath)
+  }
 
   async function login(callback?: (data: T) => void) {
     try {
