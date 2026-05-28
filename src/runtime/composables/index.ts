@@ -190,42 +190,6 @@ export const useNuxtAuthentication = createGlobalState(() => {
  * @param redirectPath Custom redirect path after login that overrides the one in the config
  */
 export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000, redirectPath?: string) {
-  if (import.meta.server) {
-    return {
-      /**
-       * Login function
-       */
-      login: async () => { },
-      /**
-       * Email or username of the user
-       * @default ''
-       */
-      usernameField: ref(''),
-      /**
-       * Password of the user
-       * @default ''
-       */
-      password: ref(''),
-      /**
-       * Number of failed login attempts
-       * @default
-       */
-      failureCount: ref(0),
-      /**
-       * Access token of the user
-       */
-      accessToken: ref(''),
-      /**
-       * Refresh token of the user
-       */
-      refreshToken: ref(''),
-      /**
-       * Whether the form can be submitted
-       */
-      canBeSubmitted: ref(false)
-    }
-  }
-
   const { count, inc: incrementFailureCount } = useCounter()
 
   const usernameField = ref<string>('')
