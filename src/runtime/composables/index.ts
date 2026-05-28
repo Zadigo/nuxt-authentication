@@ -234,15 +234,13 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
     }
   }
 
-  const _login = useThrottleFn(login, throttle)
-
   const canBeSubmitted = computed(() => usernameField.value !== '' && password.value !== '')
 
   return {
     /**
      * Login function
      */
-    login: _login,
+    login: useThrottleFn(login, throttle),
     /**
      * Email or username of the user
      * @default ''
