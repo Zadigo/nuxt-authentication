@@ -452,6 +452,7 @@ export function useAuthenticatedFetch<T>(request: NitroFetchRequest, options?: N
     return await $fetch<T>(request, {
       ...options,
       headers: {
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization': `${config.bearerTokenType || 'Token'} ${accessToken.value}`,
       }
