@@ -8,25 +8,35 @@ env:
 
 jobs:
   build-and-lint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [24]
 
     defaults:
       run:
         working-directory: ./frontend
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
         with:
-          node-version: ">=24"
+          version: 11.x
 
-      - run: npm i -g --force corepack@latest && corepack enable
+      - name: Install node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
-      - name: "Install dependencies"
-        run: npx nypm@latest i
-
-      - name: Install Nuxt
-        run: pnpm install
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm run lint
