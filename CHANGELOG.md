@@ -18,10 +18,6 @@
 
 - Zadigo ([@Zadigo](https://github.com/Zadigo))
 
-## v1.0.9
-
-[compare changes](https://github.com/Zadigo/nuxt-authentication/compare/v1.0.8...v1.0.9)
-
 ## v1.0.8
 
 [compare changes](https://github.com/Zadigo/nuxt-authentication/compare/v1.0.7...v1.0.8)
@@ -68,7 +64,6 @@
 
 - Fix typo on README
 
-
 ## v1.0.3
 
 [compare changes](https://github.com/Zadigo/nuxt-authentication/compare/v1.0.2...v1.0.3)
@@ -84,7 +79,6 @@
 ## v1.0.0-alpha.1 (2025-11-10)
 
 - Improve documentation for the README.md file
-
 
 ## v1.0.0-alpha.0 (2025-11-10)
 
