@@ -1,3 +1,12 @@
 {
-  "eslint.experimental.useFlatConfig": true
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "always"
+  },
+  "python-envs.pythonProjects": [
+    {
+      "path": "djangoplayground",
+      "envManager": "ms-python.python:venv",
+      "packageManager": "ms-python.python:pip"
+    }
+  ]
 }

@@ -18,6 +18,11 @@
             Protected page
           </nuxt-button>
 
+          <nuxt-button color="success" @click="authenticatedFetch">
+            <icon name="i-lucide:shield-check" />
+            Authenticated Fetch
+          </nuxt-button>
+
           <nuxt-button color="warning" @click="refresh">
             <icon name="i-lucide:refresh-ccw" />
             Refresh Access Token
@@ -26,9 +31,11 @@
       </nuxt-card>
 
       <nuxt-card class="max-w-2xl mx-auto mt-5 space-y-4">
-        <p>User ID: {{ userId }}</p>
-        <p>Authenticated: {{ isAuthenticated }}</p>
-        <p>Token verified: {{ tokenVerified }}</p>
+        <client-only>
+          <p>User ID: {{ userId }}</p>
+          <p>Authenticated: {{ isAuthenticated }}</p>
+          <p>Token verified: {{ tokenVerified }}</p>
+        </client-only>
 
         <nuxt-button color="error" @click="() => useLogout()">
           <icon name="i-lucide:log-out" />
@@ -40,7 +47,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useRefreshAccessToken } from '../../src/runtime/composables'
+import { useRefreshAccessToken, useAuthenticatedFetch } from '../../src/runtime/composables'
 
 const { tokenVerified } = useNuxtAuthentication()
 const { userId, isAuthenticated, getProfile } = useUser<{ email: string, username: string }>()
@@ -52,7 +59,21 @@ onMounted(async () => {
 })
 
 async function refresh() {
-  const { accessToken } = await useRefreshAccessToken()
-  console.log('access', toValue(accessToken))
+  const { accessToken, renew } = await useRefreshAccessToken()
+  await renew()
+  console.log('Access token refreshed', toValue(accessToken))
+}
+
+/**
+ * Authenticated Request
+ */
+
+const { execute } = useAuthenticatedFetch<{ id: number, username: string, email: string }>('/v1/accounts/profile', {
+  baseURL: 'http://127.0.0.1:8000',
+})
+
+async function authenticatedFetch() {
+  const response = await execute()
+  console.log('Authenticated fetch response:', response)
 }
 </script>

@@ -44,7 +44,7 @@ export interface ModuleOptions {
    *
    * @default 'renew'
    */
-  strategy?: 'renew' | 'login' | 'fail'
+  strategy?: 'renew' | 'login' | 'fail' | (string & {})
   /**
    * Optional bearer token type
    * @default 'Token'
@@ -97,18 +97,15 @@ declare module '@nuxt/schema' {
   }
 
   interface NuxtOptions {
-    nuxtAuthentication?: ModuleOptions
+    nuxtAuthentication: ModuleOptions
   }
 }
 
 export default defineNuxtModule<ModuleOptions>({
-  meta: {
-    name: 'nuxt-authentication',
-    configKey: 'nuxtAuthentication',
-  },
   // Default configuration options of the Nuxt module
   defaults: {
     enabled: true,
+    domain: '',
     refreshEndpoint: '/api/token/refresh',
     accessEndpoint: '/api/token/access',
     login: '/login',
@@ -123,11 +120,15 @@ export default defineNuxtModule<ModuleOptions>({
     accessTokenMaxAge: null,
     refreshTokenMaxAge: 60 * 60 * 24 * 7 // 7 days
   },
+  meta: {
+    name: 'nuxt-authentication',
+    configKey: 'nuxtAuthentication',
+  },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
     // Deep-merge nuxt module options + user custom gtm optionss filling missing fields
-    const moduleOptions: ModuleOptions = defu(nuxt.options.runtimeConfig.public.nuxtAuthentication, options)
+    const moduleOptions = defu(nuxt.options.runtimeConfig.public.nuxtAuthentication, options)
 
     // Transpile and alias runtime
     const runtimeDir = resolver.resolve('./runtime')

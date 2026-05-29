@@ -1,7 +1,8 @@
-import MyModule from '../../../src/module'
+import nuxtAuthentication from '../../../src/module'
 
 export default defineNuxtConfig({
+  ssr: true,
   modules: [
-    MyModule,
+    nuxtAuthentication,
   ],
 })

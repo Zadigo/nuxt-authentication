@@ -9,21 +9,24 @@ Find and replace all on all files (CMD+SHIFT+F):
 
 # Nuxt Authentication
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![License][license-src]][license-href]
-[![Nuxt][nuxt-src]][nuxt-href]
+[npm version][npm-version-href]
+[npm downloads][npm-downloads-href]
+[License][license-href]
+[Nuxt][nuxt-href]
 
 Nuxt Authentication is a simple module that proposes authentication functionalities for Nuxt applications that uses backends like Django
 REST framework or Laravel Sanctum.
 
 - [✨ &nbsp;Release Notes](/CHANGELOG.md)
+
 <!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/my-module?file=playground%2Fapp.vue) -->
-<!-- - [📖 &nbsp;Documentation](https://example.com) -->
+
+<!-- - [📖  Documentation](https://example.com) -->
 
 ## Features
 
 <!-- Highlight some of the features your module provide here -->
+
 - ⛰ &nbsp;Login / Logout
 - 🚠 &nbsp;Check Authentication Status
 - 🌲 &nbsp;Fetch User Profile
@@ -78,6 +81,13 @@ const response = await $nuxtAuthentication('/api/protected-endpoint', { method: 
 > This helper automatically attaches the access token to the `Authorization` header of your requests and will also attempt to refresh the access token if it has expired
 > if the refresh strategy is set to `renew`.
 
+You can also use the `useAuthenticatedFetch` composable to create a custom fetch function that automatically attaches the access token to the `Authorization` header of your requests:
+
+```ts
+const { authenticatedFetch } = useNuxtAuthentication()
+const response = await authenticatedFetch('/api/protected-endpoint', { method: 'GET' })
+```
+
 ### Login
 
 ```vue
@@ -91,11 +101,19 @@ const { userId, isAuthenticated } = useUser()
 
 The name of the field to be used to send the username (or email) to the backend.
 
+`throttle`
+
+Amount of time in milliseconds to throttle the login function (default: `1000`).
+
+`redirectPath`
+
+The path to redirect the user to after a successful login (default: `/`).
+
 __Renderless component__
 
 You can also use the `<nuxt-login>` renderless component to create a custom login wrapper for your own UI:
 
-```vue
+```html
 <template>
   <section>
     <nuxt-container>
@@ -151,7 +169,18 @@ A boolean indicating whether the user is authenticated or not.
 
 `getProfile(apiEndpoint: string)`
 
-A helper function which can be used to the user profile from the given API endpoint and populates the user state.
+A helper function which can be used to fetch the user profile from the given API endpoint in order to populate the user state.
+
+### Manually refreshing the access token
+
+You can also manually refresh the access token with the `useRefreshAccessToken` composable:
+
+```html
+<script lang="ts" setup>
+const { accessToken, renew } = useRefreshAccessToken()
+await renew()
+</script>
+```
 
 ## Module options
 
@@ -201,8 +230,8 @@ The name of the refresh token cookie (default: 'refresh').
 
 <details>
   <summary>Local development</summary>
-  
-  ```bash
+
+```bash
   # Install dependencies
   npm install
   
@@ -224,20 +253,17 @@ The name of the refresh token cookie (default: 'refresh').
   
   # Release new version
   npm run release
-  ```
+```
 
 </details>
 
-
 <!-- Badges -->
+
 [npm-version-src]: https://img.shields.io/npm/v/my-module/latest.svg?style=flat&colorA=020420&colorB=00DC82
 [npm-version-href]: https://npmjs.com/package/my-module
-
 [npm-downloads-src]: https://img.shields.io/npm/dm/my-module.svg?style=flat&colorA=020420&colorB=00DC82
 [npm-downloads-href]: https://npm.chart.dev/my-module
-
 [license-src]: https://img.shields.io/npm/l/my-module.svg?style=flat&colorA=020420&colorB=00DC82
 [license-href]: https://npmjs.com/package/my-module
-
 [nuxt-src]: https://img.shields.io/badge/Nuxt-020420?logo=nuxt.js
 [nuxt-href]: https://nuxt.com
