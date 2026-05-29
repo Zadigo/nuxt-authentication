@@ -31,7 +31,7 @@ jobs:
         with:
           cache: true
           cache_dependency_path: |
-            /pnpm-lock.yaml
+            /nuxt-authentication/pnpm-lock.yaml
 
       - name: Install node
         uses: actions/setup-node@v6
