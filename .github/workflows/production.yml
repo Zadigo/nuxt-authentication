@@ -2,6 +2,9 @@ on:
   pull_request:
     branches:
       - develop
+  push:
+    branches:
+      - stable/*
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
