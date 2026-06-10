@@ -42,7 +42,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NDDOE_VERSION }}
-          cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -63,7 +62,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NDDOE_VERSION }}
-          cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -93,7 +91,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NDDOE_VERSION }}
-          cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
       - name: Build
         run: pnpm run build
