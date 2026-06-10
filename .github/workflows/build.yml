@@ -45,7 +45,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Lint
-        run: pnpm run lint
+        run: |
+          npx nuxt prepare
+          pnpm run lint
 
   test:
     runs-on: ubuntu-latest
@@ -61,8 +63,10 @@ jobs:
           cache-dependency-path: frontend/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Test
-        run: pnpm run test
+      - name: Lint
+        run: |
+          npx nuxt prepare
+          pnpm run test
     
   build:
     needs: [lint, test]
