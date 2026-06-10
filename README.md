@@ -47,8 +47,6 @@ const { hasToken, isAuthenticated } = useNuxtAuthentication()
 </script>
 ```
 
-```ts
-
 That's it! You can now use Nuxt Authentication in your Nuxt app ✨
 
 ## Composables
@@ -63,7 +61,7 @@ const { hasToken, isAuthenticated } = useNuxtAuthentication()
 </script>
 ```
 
-> ![NOTE]
+> [!NOTE]
 > The `hasToken` property indicates only if there is an access token present, while the cookie
 > The `isAuthenticated` property indicates whether the user is authenticated or not based on whether the `isAuthenticated` state has been set to `true` or `false`.
 > The presence of a token does not necessarily mean that the user is authenticated, as the token could be expired or invalid.
@@ -109,7 +107,7 @@ Amount of time in milliseconds to throttle the login function (default: `1000`).
 
 The path to redirect the user to after a successful login (default: `/`).
 
-__Renderless component__
+**Renderless component**
 
 You can also use the `<nuxt-login>` renderless component to create a custom login wrapper for your own UI:
 
@@ -233,37 +231,39 @@ The name of the refresh token cookie (default: 'refresh').
 
 ```bash
   # Install dependencies
-  npm install
+  pnpm install
   
   # Generate type stubs
-  npm run dev:prepare
+  pnpm run dev:prepare
   
   # Develop with the playground
-  npm run dev
+  pnpm run dev
   
   # Build the playground
-  npm run dev:build
+  pnpm run dev:build
   
   # Run ESLint
-  npm run lint
+  pnpm run lint
   
   # Run Vitest
-  npm run test
-  npm run test:watch
-  
+  pnpm run test
+  pnpm run test:watch
+  pnpm run test:types
+  pnpm run test:release
+
   # Release new version
-  npm run release
+  pnpm run release
 ```
 
 </details>
 
 <!-- Badges -->
 
-[npm-version-src]: https://img.shields.io/npm/v/my-module/latest.svg?style=flat&colorA=020420&colorB=00DC82
-[npm-version-href]: https://npmjs.com/package/my-module
-[npm-downloads-src]: https://img.shields.io/npm/dm/my-module.svg?style=flat&colorA=020420&colorB=00DC82
-[npm-downloads-href]: https://npm.chart.dev/my-module
-[license-src]: https://img.shields.io/npm/l/my-module.svg?style=flat&colorA=020420&colorB=00DC82
-[license-href]: https://npmjs.com/package/my-module
+[npm-version-src]: https://img.shields.io/npm/v/nuxt-authentication/latest.svg?style=flat&colorA=020420&colorB=00DC82
+[npm-version-href]: https://npmjs.com/package/nuxt-authentication
+[npm-downloads-src]: https://img.shields.io/npm/dm/nuxt-authentication.svg?style=flat&colorA=020420&colorB=00DC82
+[npm-downloads-href]: https://npm.chart.dev/nuxt-authentication
+[license-src]: https://img.shields.io/npm/l/nuxt-authentication.svg?style=flat&colorA=020420&colorB=00DC82
+[license-href]: https://npmjs.com/package/nuxt-authentication
 [nuxt-src]: https://img.shields.io/badge/Nuxt-020420?logo=nuxt.js
 [nuxt-href]: https://nuxt.com
