@@ -9,10 +9,10 @@ Find and replace all on all files (CMD+SHIFT+F):
 
 # Nuxt Authentication
 
-[npm version][npm-version-href]
-[npm downloads][npm-downloads-href]
-[License][license-href]
-[Nuxt][nuxt-href]
+[![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![License][license-src]][license-href]
+[![Nuxt][nuxt-src]][nuxt-href]
 
 Nuxt Authentication is a simple module that proposes authentication functionalities for Nuxt applications that uses backends like Django
 REST framework or Laravel Sanctum.
