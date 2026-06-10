@@ -1,49 +1,113 @@
-name: ci
+name: Continuous Integration
+
+# on:
+#   push:
+#     branches:
+#       - develop
+#   merge_group:
+#     branches:
+#       - develop
+#       - main
+#       - stable/*
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Continuous integration'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - production
+          - test
+          - staging
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NDDOE_VERSION: 24
 
 jobs:
   lint:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
         with:
-          node-version: 20
+          version: 11.x
 
-      - run: npm i -g --force corepack@latest && corepack enable
+      - name: Install node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NDDOE_VERSION}}
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install dependencies
-        run: npx nypm@latest i
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
   test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
         with:
-          node-version: 20
+          version: 11.x
 
-      - run: npm i -g --force corepack@latest && corepack enable
+      - name: Install node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NDDOE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install dependencies
-        run: npx nypm@latest i
-
-      - name: Playground prepare
-        run: npm run dev:prepare
+        run: pnpm install --frozen-lockfile
 
       - name: Test
-        run: npm run test
+        run: pnpm run test
+    
+
+  build:
+    needs: [lint, test]
+    runs-on: ${{ matrix.os }}
+    if: (github.event_name == 'merge_group' && (github.base_ref == 'main' || startsWith(github.base_ref, 'stable/')))
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [24]
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.x
+
+      - name: Install node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NDDOE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Build
+        run: pnpm run build
