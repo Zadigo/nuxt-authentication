@@ -19,7 +19,7 @@
     "builtin": true
   },
   "options": {
-    "typeAware": true,
+    "typeAware": false,
     "typeCheck": false 
   }
 }
