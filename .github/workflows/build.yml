@@ -23,7 +23,7 @@ on:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  NDDOE_VERSION: 24
+  NODE_VERSION: 24
 
 jobs:
   lint:
@@ -38,7 +38,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NDDOE_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
           cache-dependency-path: frontend/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -55,7 +55,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NDDOE_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
           cache-dependency-path: frontend/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -81,7 +81,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NDDOE_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
           cache-dependency-path: frontend/pnpm-lock.yaml
       - name: Build
         run: pnpm run build
