@@ -1,9 +1,11 @@
 name: Continuous Integration
 
 # on:
-#   push:
+#   pull_request: 
+#     types: [opened, synchronize, reopened]
 #     branches:
 #       - develop
+#       - main
 #   merge_group:
 #     branches:
 #       - develop
