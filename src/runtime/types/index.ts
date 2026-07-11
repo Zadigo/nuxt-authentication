@@ -20,6 +20,11 @@ export type SsrMeApiResponse = {
 
 export type TokenRefreshApiResponse = Omit<LoginApiResponse, 'refresh'>
 
+export type VerifyTokenApiResponse = {
+  detail: string
+  code: string
+}
+
 /**
  * @private
  */

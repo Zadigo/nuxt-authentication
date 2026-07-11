@@ -1,7 +1,7 @@
 import { computed, createError, isDefined, ref, useCookie, useNuxtApp, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle, computedAsync, useCached } from '@vueuse/core'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
-import type { SsrLoginApiResponse, SsrMeApiResponse } from '../types'
+import type { LoginApiResponse, SsrLoginApiResponse, SsrMeApiResponse } from '../types'
 
 /**
  * Global state to manage authentication status. This composable
@@ -21,7 +21,6 @@ export const useNuxtAuthentication = createGlobalState(() => {
    */
 
   const [tokenVerified, toggleTokenVerified] = useToggle(false)
-  const { $nuxtAuthentication } = useNuxtApp()
 
   // If the verification fails, for future requests
   // we will skip the verification until the next token change
@@ -30,35 +29,32 @@ export const useNuxtAuthentication = createGlobalState(() => {
   async function verify(verificationKey?: string, verificationValue?: string) {
     if (hasToken.value && !skipVerification.value) {
       try {
-        const response = await $nuxtAuthentication<Record<string, string>>(config.verifyEndpoint || '/api/token/verify', {
-          method: 'POST',
-          body: { token: accessToken.value },
-          onRequestError() {
-            skipVerification.value = true
-          }
-        })
+        const response = await $fetch<LoginApiResponse>('/api/auth/verify')
 
         // The verificationKey and verificationValue are used to get the
         // from the response that indicates whether the token not valid.
         // e.g. { detail: 'Token is invalid or expired' } which can then
         // determine verificationKey = 'detail' and verificationValue = 'Token is invalid or expired'
         if (isDefined(verificationKey) && isDefined(verificationValue)) {
-          const value = response[verificationKey]
+          const value = response.detail
 
           if (isDefined(value) && value === verificationValue) {
             await useLogout()
 
-            if (config.strategy === 'login') {
-              const router = useRouter()
-              await router.push(config.login || '/login')
-            } else if (config.strategy === 'renew') {
-              const { renew } = await useRefreshAccessToken()
-              await renew()
-            } else {
-              throw createError({
-                statusCode: 401,
-                statusMessage: 'Authentication required'
-              })
+            switch (config.strategy) {
+              case 'login':
+                const router = useRouter()
+                await router.push(config.login || '/login')
+                break
+              case 'renew':
+                const { renew } = await useRefreshAccessToken()
+                await renew()
+                break
+              default:
+                throw createError({
+                  statusCode: 401,
+                  statusMessage: 'Authentication required'
+                })
             }
           } else {
             isAuthenticated.value = true

@@ -179,6 +179,10 @@ export default defineNuxtModule<ModuleOptions>({
       {
         route: '/api/auth/logout',
         handler: resolver.resolve('./runtime/server/api/auth/logout.post.ts')
+      },
+      {
+        route: '/api/auth/verify',
+        handler: resolver.resolve('./runtime/server/api/auth/verify.post.ts')
       }
     ]
     routes.forEach(route => addServerHandler(route))

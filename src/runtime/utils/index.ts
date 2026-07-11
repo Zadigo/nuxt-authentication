@@ -47,3 +47,17 @@ export async function ssrRefreshAccessToken(config: ReturnType<typeof useRuntime
     }
   }
 }
+
+/**
+ * A helper function to generate the authenticated headers for API requests.
+ * @description This function generates the necessary headers for making authenticated API requests using the provided access token and bearer token type.
+ * @param accessToken The access token to be used for authentication.
+ * @param bearerTokenType The type of bearer token (default is 'Token').
+ */
+export function getAuthenticatedHeader(accessToken: string, bearerTokenType: string = 'Token'): HeadersInit {
+  return {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization': `${bearerTokenType} ${accessToken}`,
+  }
+}

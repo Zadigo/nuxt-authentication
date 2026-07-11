@@ -27,6 +27,11 @@
             <icon name="i-lucide:refresh-ccw" />
             Refresh Access Token
           </nuxt-button>
+
+          <nuxt-button color="warning" @click='async () => void verify("detail", "Token is invalid or expired")'>
+            <icon name="i-lucide:refresh-ccw" />
+            Verify Access Token
+          </nuxt-button>
         </div>
       </nuxt-card>
 
@@ -49,7 +54,7 @@
 <script lang="ts" setup>
 import { useRefreshAccessToken, useAuthenticatedFetch } from '../../src/runtime/composables'
 
-const { tokenVerified } = useNuxtAuthentication()
+const { tokenVerified, verify } = useNuxtAuthentication()
 const { userId, isAuthenticated, getProfile } = useUser<{ email: string, username: string }>()
 
 onMounted(async () => {
