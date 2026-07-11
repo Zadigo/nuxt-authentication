@@ -127,7 +127,7 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
   const accessToken = useCookie(config.accessTokenName || 'access', { ...cookieOptions, maxAge: config.accessTokenMaxAge || undefined })
   const refreshToken = useCookie(config.refreshTokenName || 'refresh', { ...cookieOptions, maxAge: config.refreshTokenMaxAge || undefined })
 
-  if (config.loginRedirectPath) {
+  if (config.loginRedirectPath && import.meta.client) {
     void preloadRouteComponents(config.loginRedirectPath)
   }
 
