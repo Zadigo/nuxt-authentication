@@ -42,7 +42,7 @@
 
       <nuxt-card class="max-w-2xl mx-auto mt-5 space-y-4">
         <client-only>
-          <p>User ID: {{ userId }}</p>
+          <p>User ID: {{ getUserId() }}</p>
           <p>Authenticated: {{ isAuthenticated }}</p>
           <p>Token verified: {{ tokenVerified }}</p>
           <p>Has token: {{ isActive }}</p>
@@ -61,12 +61,12 @@
 import { useRefreshAccessToken, useAuthenticatedFetch } from '../../src/runtime/composables'
 
 const { tokenVerified, verify, hasToken } = useNuxtAuthentication()
-const { userId, isAuthenticated, getProfile } = useUser<{ email: string, username: string }>()
+const { isAuthenticated, getProfile, getUserId } = useUser<{ email: string, username: string }>()
 
-const isActive = hasToken()
+const isActive = computed(async () => (await hasToken()))
 
 onMounted(async () => {
-  if (userId.value) {
+  if (isAuthenticated.value) {
     await getProfile()
   }
 })

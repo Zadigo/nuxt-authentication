@@ -1,7 +1,7 @@
 import { computed, createError, isDefined, ref, useCookie, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
-import { createGlobalState, useCounter, useThrottleFn, useToggle, computedAsync, useCached, reactify } from '@vueuse/core'
+import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
-import type { LoginApiResponse, SsrApiResponse, SsrMeApiResponse } from '../types'
+import type { LoginApiResponse, SsrApiResponse } from '../types'
 
 /**
  * Global state to manage authentication status. This composable
@@ -10,11 +10,10 @@ import type { LoginApiResponse, SsrApiResponse, SsrMeApiResponse } from '../type
 export const useNuxtAuthentication = createGlobalState(() => {
   const config = useRuntimeConfig().public.nuxtAuthentication
 
-  const hasToken = reactify(() => {
-    let _response: boolean = false
-    $fetch<{ status: boolean }>('/api/auth/has-token').then((response) => _response = response.status).catch(() => false)
-    return _response
-  })
+  async function hasToken() {
+    const data = await $fetch<{ status: boolean }>('/api/auth/has-token')
+    return data.status
+  }
 
   // Creates a global state for isAuthenticated
   const isAuthenticated = useState<boolean>('isAuthenticated', () => false)
@@ -206,41 +205,20 @@ export async function useLogout(redirectPath?: string) {
 export function useUser<P>() {
   const isAuthenticated = useState('isAuthenticated')
 
-  const _userData = computedAsync(async () => {
-    const response = await $fetch<SsrMeApiResponse>('/api/auth/me', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-    return response
-  })
-
-  const userData = useCached(_userData, (newData, cachedData) => {
-    return newData?.user_id === cachedData?.user_id
-  })
-
-  const userId = computed(() => userData.value?.user_id || null)
+  async function getUserId() {
+    return await $fetch<{ user_id: string }>('/api/auth/me')
+  }
 
   async function getProfile() {
+    const data = await getUserId()
     return await $fetch<P>(`/api/auth/profile`, {
       query: {
-        id: userId.value
+        id: data.user_id
       }
     })
   }
 
   return {
-    /**
-     * Access token of the user
-     * @default null
-     */
-    // accessToken: shallowReadonly(accessToken),
-    /**
-     * User ID of the authenticated user
-     */
-    userId,
     /**
      * Whether the user is authenticated
      * @default false
@@ -248,10 +226,12 @@ export function useUser<P>() {
     isAuthenticated,
     /**
      * Function to get the user's profile
-     * @param path - The API path to fetch the user's profile
-     * @param body - Optional body to send with the request
      */
-    getProfile
+    getProfile,
+    /**
+     * Function to get the user's ID
+     */
+    getUserId
   }
 }
 
