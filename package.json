@@ -60,6 +60,7 @@
     "ufo": "^1.6.4"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.116",
     "@nuxt/devtools": "4.0.0-alpha.7",
     "@nuxt/eslint": "1.16.0",
     "@nuxt/eslint-config": "^1.16.0",
@@ -82,7 +83,7 @@
     "oxlint": "^1.73.0",
     "oxlint-tsgolint": "^0.24.0",
     "tailwindcss": "^4.3.2",
-    "typescript": "~7.0.2",
+    "typescript": "~6.0.3",
     "vitest": "^4.1.10",
     "vue-tsc": "^3.3.7"
   },

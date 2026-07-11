@@ -1,6 +1,6 @@
 import { defineNuxtPlugin, useCookie, useRuntimeConfig, navigateTo, createError } from '#imports'
 import type { LoginApiResponse } from './types'
-import { refreshAccessToken } from './utils'
+import { ssrRefreshAccessToken } from './utils'
 
 /**
  * Nuxt plugin to provide an authenticated fetch client
@@ -27,7 +27,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         access.value = null
 
         if (config.strategy === 'renew' && refresh.value) {
-          const { access: newAccess } = await refreshAccessToken(refresh.value)
+          const { access: newAccess } = await ssrRefreshAccessToken(config, refresh.value)
           access.value = newAccess
         } else if (config.strategy === 'fail') {
           createError({

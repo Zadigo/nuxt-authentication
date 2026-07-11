@@ -5,14 +5,17 @@ export type Nullable<T> = T | null
 export type Emptyable<T> = T | null | undefined
 
 export interface LoginApiResponse {
-  /**
-   * JWT Access Token
-   */
   access: string
-  /**
-   * JWT Refresh Token
-   */
   refresh: string
+  detail?: string
+}
+
+export type SsrLoginApiResponse = Partial<Pick<LoginApiResponse, 'detail'>> & {
+  success: boolean
+}
+
+export type SsrMeApiResponse = {
+  user_id: number
 }
 
 export type TokenRefreshApiResponse = Omit<LoginApiResponse, 'refresh'>

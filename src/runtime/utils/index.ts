@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#imports'
-import type { TokenRefreshApiResponse, Undefineable, Emptyable } from '../types'
+import type { Undefineable } from '../types'
 
 /**
  * @private
@@ -23,24 +23,23 @@ export function getUrl(url: string, path: Undefineable<string>) {
 }
 
 /**
- * Helper function used to ask for a new access
- * token for the user
- * @param refresh - The refresh token
+ * Helper function to refresh the access token on the server side
+ * when the access token has expired and the refresh token is still valid.
+ * @param config nuxtAuthentication configuration object
+ * @param refresh The refresh token
  */
-export async function refreshAccessToken(refresh: Emptyable<string>) {
+export async function ssrRefreshAccessToken(config: ReturnType<typeof useRuntimeConfig>['public']['nuxtAuthentication'], refresh: string) {
   try {
-    const config = useRuntimeConfig().public.nuxtAuthentication
-    const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint || '/api/token/refresh', {
+    return await $fetch<{ access: string }>('/api/auth/renew', {
       baseURL: config.domain,
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: {
         refresh
       }
     })
-
-    return {
-      access: response.access
-    }
   } catch (error) {
     console.error('Failed to refresh access token:', error)
     return {

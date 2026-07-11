@@ -1,9 +1,7 @@
-import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useNuxtApp, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
-import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
-import { useJwt } from '@vueuse/integrations/useJwt'
-import { refreshAccessToken } from '../utils/index'
+import { computed, createError, isDefined, ref, useCookie, useNuxtApp, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
+import { createGlobalState, useCounter, useThrottleFn, useToggle, computedAsync, useCached } from '@vueuse/core'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
-import type { LoginApiResponse } from '../types'
+import type { SsrLoginApiResponse, SsrMeApiResponse } from '../types'
 
 /**
  * Global state to manage authentication status. This composable
@@ -115,7 +113,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
  * @param throttle - Throttle time in milliseconds which limits how often the login function can be called
  * @param redirectPath Custom redirect path after login that overrides the one in the config
  */
-export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000, redirectPath?: string) {
+export function useLogin<T extends SsrLoginApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000, redirectPath?: string) {
   const { count, inc: incrementFailureCount } = useCounter()
 
   const usernameField = ref<string>('')
@@ -123,30 +121,25 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
 
   const config = useRuntimeConfig().public.nuxtAuthentication
 
-  const cookieOptions = {sameSite: 'strict', secure: true} as const
-  const accessToken = useCookie(config.accessTokenName || 'access', { ...cookieOptions, maxAge: config.accessTokenMaxAge || undefined })
-  const refreshToken = useCookie(config.refreshTokenName || 'refresh', { ...cookieOptions, maxAge: config.refreshTokenMaxAge || undefined })
-
   if (config.loginRedirectPath && import.meta.client) {
     void preloadRouteComponents(config.loginRedirectPath)
   }
 
   async function login(callback?: (data: T) => void) {
     try {
-      const data = await $fetch<T>(config.accessEndpoint || '/api/token/access', {
-        baseURL: config.domain,
+      const data = await $fetch<T>('/api/auth/login', {
         method: 'POST',
         body: {
           [`${usernameFieldName}`]: usernameField.value,
           password: password.value
-        },
-        onRequestError() {
-          incrementFailureCount()
         }
       })
-  
-      accessToken.value = data.access
-      refreshToken.value = data.refresh
+
+      if (!data.success) {
+        incrementFailureCount()
+        return
+      }
+
       useState<boolean>('isAuthenticated').value = true
 
       callback?.(data)
@@ -156,7 +149,7 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
 
       if (config.loginRedirectPath) {
         const router = useRouter()
-        await router.push(redirectPath || config.loginRedirectPath)
+        void router.push(redirectPath || config.loginRedirectPath)
       }
     } catch (error) {
       incrementFailureCount()
@@ -187,14 +180,6 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
      */
     failureCount: count,
     /**
-     * Access token of the user
-     */
-    accessToken,
-    /**
-     * Refresh token of the user
-     */
-    refreshToken,
-    /**
      * Whether the form can be submitted
      */
     canBeSubmitted
@@ -206,19 +191,9 @@ export function useLogin<T extends LoginApiResponse>(usernameFieldName: 'email' 
  * @param redirectPath Custom redirect path after logout that overrides the one in the config
  */
 export async function useLogout(redirectPath?: string) {
-  if (import.meta.server) {
-    return
-  }
-
   const config = useRuntimeConfig().public.nuxtAuthentication
 
-  const accessToken = useCookie(config.accessTokenName || 'access')
-  const refreshToken = useCookie(config.refreshTokenName || 'refresh')
-
-  accessToken.value = null
-  refreshToken.value = null
-
-  useState<boolean>('isAuthenticated').value = false
+  void $fetch('/api/auth/logout')
 
   if (config.loginRedirectPath) {
     const router = useRouter()
@@ -226,32 +201,28 @@ export async function useLogout(redirectPath?: string) {
   }
 }
 
-export interface JWTResponseData {
-  /**
-   * User ID of the authenticated user
-   */
-  user_id: number
-}
-
 /**
  * Composable used to check if the user is logged in
  */
 export function useUser<P>() {
-  const config = useRuntimeConfig().public.nuxtAuthentication
-  const accessToken = useCookie(config.accessTokenName || 'access')
   const isAuthenticated = useState('isAuthenticated')
 
-  const userId = computed(() => {
-    if (accessToken.value) {
-      const result = useJwt<JWTResponseData>(accessToken.value).payload.value
-
-      if (result) {
-        const { user_id } = result
-        return user_id
+  const _userData = computedAsync(async () => {
+    const response = await $fetch<SsrMeApiResponse>('/api/auth/me', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       }
-    }
-    return undefined
+    })
+    return response
   })
+
+  const userData = useCached(_userData, (newData, cachedData) => {
+    return newData?.user_id === cachedData?.user_id
+  })
+
+  const userId = computed(() => userData.value?.user_id || null)
 
   function getProfile(path: NitroFetchRequest, body: Record<string, unknown> | null | undefined = null, method: 'GET' | 'POST' = 'GET') {
     const { $nuxtAuthentication } = useNuxtApp()
@@ -270,7 +241,7 @@ export function useUser<P>() {
      * Access token of the user
      * @default null
      */
-    accessToken: shallowReadonly(accessToken),
+    // accessToken: shallowReadonly(accessToken),
     /**
      * User ID of the authenticated user
      */
@@ -293,19 +264,14 @@ export function useUser<P>() {
  * Function used to refresh the access token
  * on the client side.
  *
- * @description You are responseble for setting the new
+ * @description You are responsible for setting the new
  * access token in the cookie after calling this function
  *
- * @param throttle - Throttle time in milliseconds whcih limits how often the token can be refreshed
+ * @param throttle - Throttle time in milliseconds which limits how often the token can be refreshed
  */
 export async function useRefreshAccessToken(throttle: number = 5000) {
-  const config = useRuntimeConfig().public.nuxtAuthentication
-  const accessToken = useCookie(config.accessTokenName || 'access')
-  const refreshToken = useCookie(config.refreshTokenName || 'refresh')
-
   async function renew() {
-    const { access } = await refreshAccessToken(refreshToken.value)
-    accessToken.value = access
+    return await $fetch<{ status: boolean }>('/api/auth/renew')
   }
 
   return {
@@ -313,10 +279,6 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
      * Function used to renew the access token
      */
     renew: useThrottleFn(renew, throttle),
-    /**
-     * Access token of the user
-     */
-    accessToken
   }
 }
 
