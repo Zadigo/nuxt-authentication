@@ -1,11 +1,9 @@
-import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useMemoize, useNuxtApp, useRouter, useRuntimeConfig, useState, shallowRef, preloadRouteComponents } from '#imports'
-import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
+import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useNuxtApp, useRouter, useRuntimeConfig, useState, shallowRef, preloadRouteComponents } from '#imports'
+import { createGlobalState, useCounter, useThrottleFn, useToggle, computedAsync } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import { refreshAccessToken } from '../utils/index'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
 import type { LoginApiResponse } from '../types'
-
-// import { useInterval } from '@vueuse/core'
 
 /**
  * Global state to manage authentication status. This composable
@@ -255,13 +253,19 @@ export function useUser<P>() {
     return undefined
   })
 
-  const getProfile = useMemoize(async (path: NitroFetchRequest) => {
-    if (isDefined(path)) {
+  function getProfile(path: NitroFetchRequest, body: Record<string, unknown> | null | undefined = null, method: 'GET' | 'POST' = 'GET') {
+    return computedAsync(async () => {
       const { $nuxtAuthentication } = useNuxtApp()
-      return await $nuxtAuthentication<P>(path, { method: 'GET' })
-    }
-    console.warn('User ID is not defined')
-  })
+      return await $nuxtAuthentication<P>(path, {
+        method,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body
+      })
+    })
+  }
 
   return {
     /**
@@ -281,6 +285,7 @@ export function useUser<P>() {
     /**
      * Function to get the user's profile
      * @param path - The API path to fetch the user's profile
+     * @param body - Optional body to send with the request
      */
     getProfile
   }
