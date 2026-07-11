@@ -336,6 +336,13 @@ export function useAuthenticatedFetch<T>(request: NitroFetchRequest, options?: N
   const accessToken = useCookie(config.accessTokenName || 'access')
 
   async function _fetch() {
+    if (!accessToken.value) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Authentication required'
+      })
+    }
+    
     return await $fetch<T>(request, {
       ...options,
       headers: {
