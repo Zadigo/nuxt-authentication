@@ -1,5 +1,5 @@
 import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useNuxtApp, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
-import { createGlobalState, useCounter, useThrottleFn, useToggle, computedAsync } from '@vueuse/core'
+import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import { refreshAccessToken } from '../utils/index'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
@@ -254,16 +254,14 @@ export function useUser<P>() {
   })
 
   function getProfile(path: NitroFetchRequest, body: Record<string, unknown> | null | undefined = null, method: 'GET' | 'POST' = 'GET') {
-    return computedAsync(async () => {
-      const { $nuxtAuthentication } = useNuxtApp()
-      return await $nuxtAuthentication<P>(path, {
-        method,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body
-      })
+    const { $nuxtAuthentication } = useNuxtApp()
+    return $nuxtAuthentication<P>(path, {
+      method,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body
     })
   }
 
