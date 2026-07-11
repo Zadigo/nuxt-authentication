@@ -1,7 +1,7 @@
 import { computed, createError, isDefined, ref, useCookie, useNuxtApp, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle, computedAsync, useCached } from '@vueuse/core'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
-import type { LoginApiResponse, SsrLoginApiResponse, SsrMeApiResponse } from '../types'
+import type { LoginApiResponse, SsrApiResponse, SsrMeApiResponse } from '../types'
 
 /**
  * Global state to manage authentication status. This composable
@@ -109,7 +109,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
  * @param throttle - Throttle time in milliseconds which limits how often the login function can be called
  * @param redirectPath Custom redirect path after login that overrides the one in the config
  */
-export function useLogin<T extends SsrLoginApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000, redirectPath?: string) {
+export function useLogin<T extends SsrApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000, redirectPath?: string) {
   const { count, inc: incrementFailureCount } = useCounter()
 
   const usernameField = ref<string>('')

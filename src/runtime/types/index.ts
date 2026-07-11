@@ -10,7 +10,7 @@ export interface LoginApiResponse {
   detail?: string
 }
 
-export type SsrLoginApiResponse = Partial<Pick<LoginApiResponse, 'detail'>> & {
+export type SsrApiResponse = Partial<Pick<LoginApiResponse, 'detail'>> & {
   success: boolean
 }
 

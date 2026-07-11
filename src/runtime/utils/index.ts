@@ -1,5 +1,5 @@
-import { useRuntimeConfig } from '#imports'
-import type { Undefineable } from '../types'
+import { createError, useRuntimeConfig } from '#imports'
+import type { SsrApiResponse, Undefineable } from '../types'
 
 /**
  * @private
@@ -30,7 +30,7 @@ export function getUrl(url: string, path: Undefineable<string>) {
  */
 export async function ssrRefreshAccessToken(config: ReturnType<typeof useRuntimeConfig>['public']['nuxtAuthentication'], refresh: string) {
   try {
-    return await $fetch<{ access: string }>('/api/auth/renew', {
+    return await $fetch<SsrApiResponse>('/api/auth/renew', {
       baseURL: config.domain,
       method: 'POST',
       headers: {
@@ -54,7 +54,14 @@ export async function ssrRefreshAccessToken(config: ReturnType<typeof useRuntime
  * @param accessToken The access token to be used for authentication.
  * @param bearerTokenType The type of bearer token (default is 'Token').
  */
-export function getAuthenticatedHeader(accessToken: string, bearerTokenType: string = 'Token'): HeadersInit {
+export function getAuthenticatedHeader(accessToken: Undefineable<string>, bearerTokenType: string = 'Token'): HeadersInit {
+  if (!accessToken) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Authentication required'
+    })
+  }
+
   return {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
