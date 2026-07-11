@@ -1,4 +1,4 @@
-import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useNuxtApp, useRouter, useRuntimeConfig, useState, shallowRef, preloadRouteComponents } from '#imports'
+import { computed, createError, isDefined, ref, shallowReadonly, useCookie, useNuxtApp, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle, computedAsync } from '@vueuse/core'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import { refreshAccessToken } from '../utils/index'
@@ -239,7 +239,7 @@ export interface JWTResponseData {
 export function useUser<P>() {
   const config = useRuntimeConfig().public.nuxtAuthentication
   const accessToken = useCookie(config.accessTokenName || 'access')
-  const isAuthenticated = useState('isAuthenticated', () => false)
+  const isAuthenticated = useState('isAuthenticated')
 
   const userId = computed(() => {
     if (accessToken.value) {
