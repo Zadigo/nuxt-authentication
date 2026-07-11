@@ -26,6 +26,28 @@ export interface ModuleOptions {
    */
   accessEndpoint?: string
   /**
+   * Profile endpoint on the backend
+   * @default '/api/auth/profile'
+   */
+  profileEndpoint?: string
+  /**
+   * Profile endpoint type, either 'api' or 'graphql'
+   * @default 'api'
+   */
+  profileEndpointType?: 'api' | 'graphql'
+  /**
+   * Fields to fetch from the profile endpoint (only applicable for graphql)
+   * @default []
+   */
+  profileEndpointFields?: ('email' | 'username' | 'id' | string)[]
+  /**
+   * GraphQL query to fetch the user profile (only applicable for graphql)
+   * @default undefined
+   * @example `query { user { id, email, username } }`
+   * @example `query { profile { id, email, username } }`
+   */
+  profileGraphqlQuery?: string
+  /**
    * Login path on Nuxt
    * @default '/login'
    */
@@ -109,6 +131,10 @@ export default defineNuxtModule<ModuleOptions>({
     domain: '',
     refreshEndpoint: '/api/token/refresh',
     accessEndpoint: '/api/token/access',
+    profileEndpoint: '/api/auth/profile',
+    profileEndpointType: 'api',
+    profileEndpointFields: [],
+    profileGraphqlQuery: undefined,
     login: '/login',
     loginRedirectPath: '/',
     strategy: 'renew',
@@ -183,6 +209,14 @@ export default defineNuxtModule<ModuleOptions>({
       {
         route: '/api/auth/verify',
         handler: resolver.resolve('./runtime/server/api/auth/verify.post.ts')
+      },
+      {
+        route: '/api/auth/has-token',
+        handler: resolver.resolve('./runtime/server/api/auth/has-token.get.ts')
+      },
+      {
+        route: '/api/auth/profile',
+        handler: resolver.resolve('./runtime/server/api/auth/profile.get.ts')
       }
     ]
     routes.forEach(route => addServerHandler(route))

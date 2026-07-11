@@ -1,5 +1,5 @@
-import { computed, createError, isDefined, ref, useCookie, useNuxtApp, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
-import { createGlobalState, useCounter, useThrottleFn, useToggle, computedAsync, useCached } from '@vueuse/core'
+import { computed, createError, isDefined, ref, useCookie, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
+import { createGlobalState, useCounter, useThrottleFn, useToggle, computedAsync, useCached, reactify } from '@vueuse/core'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
 import type { LoginApiResponse, SsrApiResponse, SsrMeApiResponse } from '../types'
 
@@ -9,9 +9,12 @@ import type { LoginApiResponse, SsrApiResponse, SsrMeApiResponse } from '../type
  */
 export const useNuxtAuthentication = createGlobalState(() => {
   const config = useRuntimeConfig().public.nuxtAuthentication
-  const accessToken = useCookie(config.accessTokenName || 'access')
 
-  const hasToken = computed(() => isDefined(accessToken) && accessToken.value !== '')
+  const hasToken = reactify(() => {
+    let _response: boolean = false
+    $fetch<{ status: boolean }>('/api/auth/has-token').then((response) => _response = response.status).catch(() => false)
+    return _response
+  })
 
   // Creates a global state for isAuthenticated
   const isAuthenticated = useState<boolean>('isAuthenticated', () => false)
@@ -27,7 +30,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
   const skipVerification = ref<boolean>(false)
 
   async function verify(verificationKey?: string, verificationValue?: string) {
-    if (hasToken.value && !skipVerification.value) {
+    if (!skipVerification.value) {
       try {
         const response = await $fetch<LoginApiResponse>('/api/auth/verify')
 
@@ -220,15 +223,11 @@ export function useUser<P>() {
 
   const userId = computed(() => userData.value?.user_id || null)
 
-  function getProfile(path: NitroFetchRequest, body: Record<string, unknown> | null | undefined = null, method: 'GET' | 'POST' = 'GET') {
-    const { $nuxtAuthentication } = useNuxtApp()
-    return $nuxtAuthentication<P>(path, {
-      method,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body
+  async function getProfile() {
+    return await $fetch<P>(`/api/auth/profile`, {
+      query: {
+        id: userId.value
+      }
     })
   }
 

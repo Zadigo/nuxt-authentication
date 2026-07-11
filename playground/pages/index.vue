@@ -29,8 +29,13 @@
           </nuxt-button>
 
           <nuxt-button color="warning" @click='async () => void verify("detail", "Token is invalid or expired")'>
-            <icon name="i-lucide:refresh-ccw" />
+            <icon name="i-lucide:shield-check" />
             Verify Access Token
+          </nuxt-button>
+
+          <nuxt-button color="warning" @click='async () => void getProfile()'>
+            <icon name="i-lucide:user" />
+            Get profile
           </nuxt-button>
         </div>
       </nuxt-card>
@@ -40,6 +45,7 @@
           <p>User ID: {{ userId }}</p>
           <p>Authenticated: {{ isAuthenticated }}</p>
           <p>Token verified: {{ tokenVerified }}</p>
+          <p>Has token: {{ isActive }}</p>
         </client-only>
 
         <nuxt-button color="error" @click="() => useLogout()">
@@ -54,12 +60,14 @@
 <script lang="ts" setup>
 import { useRefreshAccessToken, useAuthenticatedFetch } from '../../src/runtime/composables'
 
-const { tokenVerified, verify } = useNuxtAuthentication()
+const { tokenVerified, verify, hasToken } = useNuxtAuthentication()
 const { userId, isAuthenticated, getProfile } = useUser<{ email: string, username: string }>()
+
+const isActive = hasToken()
 
 onMounted(async () => {
   if (userId.value) {
-    await getProfile(`/v1/accounts/profile`)
+    await getProfile()
   }
 })
 

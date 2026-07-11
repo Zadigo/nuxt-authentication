@@ -13,6 +13,8 @@ export default defineNuxtConfig({
         enabled: true,
         accessEndpoint: '/auth/v1/token/',
         refreshEndpoint: '/auth/v1/token/refresh/',
+        profileEndpoint: '/v1/accounts/profile',
+        profileEndpointType: 'api',
         login: '/login',
         loginRedirectPath: '/',
         strategy: 'renew',
