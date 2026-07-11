@@ -57,7 +57,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
               const { renew } = await useRefreshAccessToken()
               await renew()
             } else {
-              createError({
+              throw createError({
                 statusCode: 401,
                 statusMessage: 'Authentication required'
               })
