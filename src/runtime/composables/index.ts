@@ -16,7 +16,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
   const hasToken = computed(() => isDefined(accessToken) && accessToken.value !== '')
 
   // Creates a global state for isAuthenticated
-  const isAuthenticated = useState<boolean>('isAuthenticated', () => shallowRef(false))
+  const isAuthenticated = useState<boolean>('isAuthenticated', () => false)
 
   /**
    * Verification
