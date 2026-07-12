@@ -8,7 +8,7 @@ import type { LoginApiResponse, SsrApiResponse } from '../types'
  * should be ideally first used in `app.vue` to initialize the state.
  */
 export const useNuxtAuthentication = createGlobalState(() => {
-  const config = useRuntimeConfig().public.nuxtAuthentication
+  // const config = useRuntimeConfig().public.nuxtAuthentication
 
   async function hasToken() {
     const data = await $fetch<{ status: boolean }>('/api/auth/has-token')
@@ -24,83 +24,101 @@ export const useNuxtAuthentication = createGlobalState(() => {
 
   const [tokenVerified, toggleTokenVerified] = useToggle(false)
 
-  // If the verification fails, for future requests
-  // we will skip the verification until the next token change
-  const skipVerification = ref<boolean>(false)
-
-  async function verify(verificationKey?: string, verificationValue?: string) {
-    if (!skipVerification.value) {
-      try {
-        const response = await $fetch<LoginApiResponse>('/api/auth/verify')
-
-        // The verificationKey and verificationValue are used to get the
-        // from the response that indicates whether the token not valid.
-        // e.g. { detail: 'Token is invalid or expired' } which can then
-        // determine verificationKey = 'detail' and verificationValue = 'Token is invalid or expired'
-        if (isDefined(verificationKey) && isDefined(verificationValue)) {
-          const value = response.detail
-
-          if (isDefined(value) && value === verificationValue) {
-            await useLogout()
-
-            switch (config.strategy) {
-              case 'login':
-                const router = useRouter()
-                await router.push(config.login || '/login')
-                break
-              case 'renew':
-                const { renew } = await useRefreshAccessToken()
-                await renew()
-                break
-              default:
-                throw createError({
-                  statusCode: 401,
-                  statusMessage: 'Authentication required'
-                })
-            }
-          } else {
-            isAuthenticated.value = true
-            toggleTokenVerified(true)
-          }
-        }
-      } catch {
-        isAuthenticated.value = false
-        toggleTokenVerified(false)
+  async function verify(verificationValue?: string): Promise<LoginApiResponse | undefined> {
+    try {
+      const response = await $fetch<LoginApiResponse>('/api/auth/verify')
+      const value = response.detail
+      
+      if (!isDefined(value)) {
+        toggleTokenVerified(true)
+      } else {
+        tokenVerified.value = value === verificationValue
       }
+      return response
+    } catch {
+      isAuthenticated.value = false
+      toggleTokenVerified(false)
+      return undefined
     }
   }
 
+  async function verifyWithSideEffects(verificationValue?: string): ReturnType<typeof verify> {
+    const config = useRuntimeConfig().public.nuxtAuthentication
+    const result = await verify(verificationValue)
+
+    // The verificationKey and verificationValue are used to get the
+    // from the response that indicates whether the token not valid.
+    // e.g. { detail: 'Token is invalid or expired' } which can then
+    // determine verificationKey = 'detail' and verificationValue = 'Token is invalid or expired'
+
+    if (isDefined(result) && result.detail === verificationValue) {
+      await useLogout()
+
+      switch (config.strategy) {
+        case 'login':
+          const router = useRouter()
+          await router.push(config.login || '/login')
+          break
+        case 'renew':
+          const { renew } = await useRefreshAccessToken()
+          await renew()
+          break
+        default:
+          throw createError({
+            statusCode: 401,
+            statusMessage: 'Authentication required'
+          })
+      }
+    }
+
+    return result
+  }
+
   return {
-    /**
-     * Whether the user has a token stored. This does not mean that
-     * the user is authenticated
-     * @default false
-     */
-    hasToken,
     /**
      * Whether the user is actually authenticated
      * @default false
      */
     isAuthenticated,
     /**
-     * Function which can be used to verify the access token
-     * when the Nuxt app or page is mounted
-     * @param _verificationKey What key to check in the response to consider the token invalid
-     * @param _verificationValue What to check for in the response in order to consider the token invalid
-     * @example ```ts
-     * // In app.vue
-     * const { verify } = useNuxtAuthentication()
-     * onMounted(async () => {
-     *    await verify('detail', 'Token is invalid or expired')
-     * })
-     * ```
-     */
-    verify,
-    /**
      * Whether the token has been verified
      * @default false
      */
-    tokenVerified
+    tokenVerified,
+    /**
+     * Whether the user has a token stored. This does not mean that
+     * the user is authenticated
+     * @default false
+    */
+   hasToken,
+   /**
+    * Function which can be used to verify the access token
+    * when the Nuxt app or page is mounted
+    * @param verificationValue What to check for in the response in order to consider the token invalid
+    * @example ```ts
+    * // In app.vue
+    * const { verify } = useNuxtAuthentication()
+    * onMounted(async () => {
+    *    await verify('Token is invalid or expired')
+    * })
+    * ```
+    */
+    verify,
+    /**
+     * Function which can be used to verify the access token
+     * when the Nuxt app or page is mounted. If the token is invalid,
+     * it will perform the necessary side effects based on the strategy
+     * defined in the config.
+     * @param verificationValue What to check for in the response in order to consider the token invalid
+     * @example ```ts
+     * // In app.vue
+     * const { verifyWithSideEffects } = useNuxtAuthentication()
+     * onMounted(async () => {
+     *    await verifyWithSideEffects('Token is invalid or expired')
+     * })
+     * ```
+     */
+    verifyWithSideEffects
   }
 })
 
@@ -194,6 +212,7 @@ export async function useLogout(redirectPath?: string) {
   const config = useRuntimeConfig().public.nuxtAuthentication
 
   void $fetch('/api/auth/logout')
+  useState<boolean>('isAuthenticated').value = false
 
   if (config.loginRedirectPath) {
     const router = useRouter()
@@ -248,7 +267,13 @@ export function useUser() {
  */
 export async function useRefreshAccessToken(throttle: number = 5000) {
   async function renew() {
-    return await $fetch<{ status: boolean }>('/api/auth/renew')
+    const result = await $fetch<{ status: boolean }>('/api/auth/renew')
+    
+    if (result.status) {
+      useState<boolean>('isAuthenticated').value = true
+    }
+    
+    return result
   }
 
   return {

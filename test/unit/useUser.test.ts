@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
+import { useUser } from '../../src/runtime/composables'
 
 describe('composables', () => {
-  it('should be defined', () => {
-    expect(true).toBe(true)
+  it('composable structure', () => {
+    const { isAuthenticated } = useUser()
+    expect(isAuthenticated).toBeDefined()
   })
 })

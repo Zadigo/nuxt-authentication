@@ -1,6 +1,6 @@
 // @vitest-environment nuxt
 
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import { useLogin } from '../../src/runtime/composables'
 import type { NavigationFailure } from 'vue-router'
@@ -62,7 +62,7 @@ mockNuxtImport<() => ReturnType<typeof import('vue-router').useRouter>>('useRout
 })
 
 describe('useLogin', () => {
-  beforeEach(() => {
+  afterEach(() => {
     vi.clearAllMocks()
   })
 
@@ -174,7 +174,10 @@ describe('useLogin', () => {
     // Mock $fetch to simulate an error during login
     vi.stubGlobal('$fetch', vi.fn(async (url: string, _options?: Record<string, unknown>) => {
       if (url === '/api/auth/login') {
-        throw new Error('Network error')
+        const error = new Error('Network error') as Error & { statusCode?: number, data?: unknown }
+        error.statusCode = 500
+        error.data = { statusCode: 500, statusMessage: 'Network error' }
+        throw error
       }
       return {}
     }))
