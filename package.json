@@ -1,6 +1,6 @@
 {
   "name": "nuxt-authentication",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Nuxt Authentication is a simple module that proposes authentication functionalities for Nuxt applications that use backends like Django REST framework or Laravel Sanctum.",
   "repository": "https://github.com/Zadigo/nuxt-authentication",
   "license": "MIT",
