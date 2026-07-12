@@ -3,6 +3,10 @@ import { defu } from 'defu'
 import type { Nullable } from './runtime/types'
 import type { NitroEventHandler } from 'nitropack/types'
 
+export type ProtectedRoute = {
+  route: string
+}
+
 // Module options TypeScript interface definition
 export interface ModuleOptions {
   /**
@@ -47,6 +51,12 @@ export interface ModuleOptions {
    * @example `query { profile { id, email, username } }`
    */
   profileGraphqlQuery?: string
+  /**
+   * Protected routes that require authentication. 
+   * If the user is not authenticated, they will be 
+   * redirected to the login page.
+   */
+  // protectedRoutes?: ProtectedRoute[]
   /**
    * Login path on Nuxt
    * @default '/login'
@@ -135,6 +145,7 @@ export default defineNuxtModule<ModuleOptions>({
     profileEndpointType: 'api',
     profileEndpointFields: [],
     profileGraphqlQuery: undefined,
+    // protectedRoutes: [],
     login: '/login',
     loginRedirectPath: '/',
     strategy: 'renew',
@@ -165,7 +176,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.runtimeConfig.public.nuxtAuthentication = moduleOptions
 
     // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`
-    addPlugin(resolver.resolve('./runtime/plugin'))
+    addPlugin(resolver.resolve('./runtime/nuxtauth.server'))
 
     // Add composables
     const composablesPath = resolver.resolve('./runtime/composables')
@@ -217,6 +228,10 @@ export default defineNuxtModule<ModuleOptions>({
       {
         route: '/api/auth/profile',
         handler: resolver.resolve('./runtime/server/api/auth/profile.get.ts')
+      },
+      {
+        route: '/api/proxy/[...path]',
+        handler: resolver.resolve('./runtime/server/api/proxy/[...path].ts')
       }
     ]
     routes.forEach(route => addServerHandler(route))

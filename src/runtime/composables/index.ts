@@ -1,4 +1,4 @@
-import { computed, createError, isDefined, ref, useCookie, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
+import { computed, createError, isDefined, ref, useRouter, useRuntimeConfig, useState, preloadRouteComponents, useNuxtApp } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
 import type { LoginApiResponse, SsrApiResponse } from '../types'
@@ -91,7 +91,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
      * // In app.vue
      * const { verify } = useNuxtAuthentication()
      * onMounted(async () => {
-     *   await verify('detail', 'Token is invalid or expired')
+     *    await verify('detail', 'Token is invalid or expired')
      * })
      * ```
      */
@@ -101,7 +101,6 @@ export const useNuxtAuthentication = createGlobalState(() => {
      * @default false
      */
     tokenVerified
-    // ...intervalReturnValues
   }
 })
 
@@ -262,35 +261,21 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
  * @param request The request URL or NitroFetchRequest object
  * @param options Options for the fetch request
  */
-export function useAuthenticatedFetch<T>(request: NitroFetchRequest, options?: NitroFetchOptions<NitroFetchRequest, 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'>) {
-  if (import.meta.server) {
-    return {
-      execute: async () => { }
-    }
-  }
+export function useAuthenticatedFetch<T extends Record<string, unknown>>(request: NitroFetchRequest, options?: NitroFetchOptions<NitroFetchRequest, 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'>) {
+  const { $authenticatedFetch } = useNuxtApp()
 
-  const config = useRuntimeConfig().public.nuxtAuthentication
-  const accessToken = useCookie(config.accessTokenName || 'access')
-
-  async function _fetch() {
-    if (!accessToken.value) {
+  const execute = async () => {
+    try {
+      return await $authenticatedFetch<T>(request, options)
+    } catch (error: any) {
       throw createError({
-        statusCode: 401,
-        statusMessage: 'Authentication required'
+        statusCode: error?.response?.status || 500,
+        statusMessage: error?.response?._data?.detail || 'Authenticated fetch request failed'
       })
     }
-    
-    return await $fetch<T>(request, {
-      ...options,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `${config.bearerTokenType || 'Token'} ${accessToken.value}`,
-      }
-    })
-  }
+  }  
 
   return {
-    execute: _fetch
+    execute
   }
 }

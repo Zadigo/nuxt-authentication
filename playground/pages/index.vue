@@ -42,7 +42,7 @@
 
       <nuxt-card class="max-w-2xl mx-auto mt-5 space-y-4">
         <client-only>
-          <p>User ID: {{ getUserId() }}</p>
+          <p>User ID: {{ userId }}</p>
           <p>Authenticated: {{ isAuthenticated }}</p>
           <p>Token verified: {{ tokenVerified }}</p>
           <p>Has token: {{ isActive }}</p>
@@ -64,6 +64,8 @@ const { tokenVerified, verify, hasToken } = useNuxtAuthentication()
 const { isAuthenticated, getProfile, getUserId } = useUser<{ email: string, username: string }>()
 
 const isActive = computed(async () => (await hasToken()))
+
+const userId = computed(async () => await getUserId())
 
 onMounted(async () => {
   if (isAuthenticated.value) {
