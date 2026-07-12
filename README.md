@@ -14,8 +14,7 @@ Find and replace all on all files (CMD+SHIFT+F):
 [License][license-href]
 [Nuxt][nuxt-href]
 
-Nuxt Authentication is a simple module that proposes authentication functionalities for Nuxt applications that uses backends like Django
-REST framework or Laravel Sanctum.
+Nuxt Authentication is a simple module that proposes authentication functionalities for Nuxt applications that uses backends like Django REST framework or Laravel Sanctum.
 
 - [✨ &nbsp;Release Notes](/CHANGELOG.md)
 
