@@ -201,21 +201,21 @@ export async function useLogout(redirectPath?: string) {
 /**
  * Composable used to check if the user is logged in
  */
-export function useUser<P>() {
+export function useUser() {
   const isAuthenticated = useState('isAuthenticated')
 
-  async function getUserId() {
-    return await $fetch<{ user_id: string }>('/api/auth/me')
-  }
+  // async function getUserId() {
+  //   return await $fetch<{ user_id: string }>('/api/auth/me')
+  // }
 
-  async function getProfile() {
-    const data = await getUserId()
-    return await $fetch<P>(`/api/auth/profile`, {
-      query: {
-        id: data.user_id
-      }
-    })
-  }
+  // async function getProfile() {
+  //   const data = await getUserId()
+  //   return await $fetch<P>('/api/auth/profile', {
+  //     query: {
+  //       id: data.user_id
+  //     }
+  //   })
+  // }
 
   return {
     /**
@@ -226,11 +226,11 @@ export function useUser<P>() {
     /**
      * Function to get the user's profile
      */
-    getProfile,
+    // getProfile,
     /**
      * Function to get the user's ID
      */
-    getUserId
+    // getUserId
   }
 }
 
