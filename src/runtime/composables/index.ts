@@ -116,12 +116,13 @@ export function useLogin<T extends SsrApiResponse>(usernameFieldName: 'email' | 
   const usernameField = ref<string>('')
   const password = ref<string>('')
 
-  console.log('Config', useRuntimeConfig())
   const config = useRuntimeConfig().public.nuxtAuthentication
 
   if (config.loginRedirectPath && import.meta.client) {
     void preloadRouteComponents(config.loginRedirectPath)
   }
+
+  const isAuthenticated = useState<boolean>('isAuthenticated')
 
   async function login(callback?: (data: T) => void) {
     try {
@@ -138,7 +139,7 @@ export function useLogin<T extends SsrApiResponse>(usernameFieldName: 'email' | 
         return
       }
 
-      useState<boolean>('isAuthenticated').value = true
+      isAuthenticated.value = true
 
       callback?.(data)
 
@@ -151,6 +152,7 @@ export function useLogin<T extends SsrApiResponse>(usernameFieldName: 'email' | 
       }
     } catch (error) {
       incrementFailureCount()
+      isAuthenticated.value = false
       console.error('Login failed:', error)
     }
   }
