@@ -116,6 +116,7 @@ export function useLogin<T extends SsrApiResponse>(usernameFieldName: 'email' | 
   const usernameField = ref<string>('')
   const password = ref<string>('')
 
+  console.log('Config', useRuntimeConfig())
   const config = useRuntimeConfig().public.nuxtAuthentication
 
   if (config.loginRedirectPath && import.meta.client) {

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { useNuxtAuthentication } from '../../src/runtime/composables/index'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 
