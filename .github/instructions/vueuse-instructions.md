@@ -1,47 +1,12 @@
 ---
-applyTo: "nuxt-authentication/**/*"
-description: "Use the existing code style and structure for consistency. Use the guides from the official Nuxt 4 module authoring documentation for best practices."
+applyTo: "**/*.vue", "**/*.ts"
+description: Code recommendations for Vue and Typescript files when implementing functions for @vueuse/core or related libraries.
+argument-hint: "Ask me to help with code completion, refactoring, or debugging in Vue and Typescript files related to @vueuse/core or similar libraries."
+target: vscode
 ---
+## Coding Guidelines
 
-# Module Instructions
-
-**Context**
-
-You are a Nuxt/Vue3 high-level code reviewer and contributor that helps maintain the frontend code quality and consistency by implementing production-level best practices (security, performance, accessibility, and maintainability). Keep in mind that the code should always also be SEO friendly and optimized for search engines.
-
-- The source is located under the `src/` directory. Respect the existing SSR strategy in `routeRules`; some paths are intentionally client-rendered.
-- Available scripts are defined in [package.json](../../package.json). Use the narrowest one that matches the area you changed: `pnpm test:unit`, `pnpm test:nuxt`, `pnpm test:e2e`, or `pnpm lint`.
-- You can refer to the readme files located each application folder for more specific understanding of the frontend architecture and guidelines for each application:
-    - [README.md](../../README.md)
-
-## Guidelines
-
-**General Best Practices**
-
-- Prefer `@vueuse/nuxt` composables and patterns when possible to keep the codebase consistent and leverage community best practices. You can refer to the Vueuse documentation functions:
-    - https://vueuse.org/functions.html
-- Respect the Nuxt 4 guidelines and conventions for file structure, composables, and stores.
-    - For example do not explicitly import composables, components or stores within the utils directory which are already auto-imported by Nuxt automatically.
-- Always prefer the latest guidance from the official Nuxt 4, VueJs and Nitro documentation for best practices and patterns:
-    - https://nuxt.com/docs/4.x/directory-structure
-    - https://nuxt.com/docs/4.x/guide
-    - https://nuxt.com/docs/4.x/guide/best-practices/performance
-    - https://nuxt.com/docs/4.x/api
-    - https://vuejs.org/glossary/
-    - https://vuejs.org/guide/best-practices/production-deployment.html
-    - https://vuejs.org/guide/best-practices/performance.html
-    - https://vuejs.org/guide/best-practices/accessibility.html
-    - https://vuejs.org/guide/best-practices/security.html
-- If you are unsure of what data to use for a variable, you can sporadically use the `faker` function in `@faker-js/faker` as a placeoholder based on the context of the code. For example, if you need a placeholder name for a user, you can use `const name = ref(faker.name.fullName())`. Use this only if the library is already installed and available in the codebase, and make sure to import it at the top of the file with `import { faker } from '@faker-js/faker'`.
-
-## Notes
-
-- When using template refs, prefer `useTemplateRef` native Api as opposed to using a normal `ref`
-- Prefer this syntax when defining emits `defineEmits<{ [event: string]: any[] }>()`
-
-**Vueuse Patterns**
-
-Here are some `@vueuse/nuxt` typical patterns that you can implement as guidelines for your code suggestions:
+### Typical Patterns
 
 ```typescript
 // Global state
@@ -185,8 +150,18 @@ const userInfo = computedAsync(async () => {
 ```
 
 ```typescript
+// Rounding numbers with precision
+const value = ref(3.1415)
+const result = usePrecision(value, 2)
+```
+
+```typescript
 // Defining models in components
 const props = defineProps<{modelValue: string}>()
 const emit = defineEmits(['update:modelValue'])
 const data = useVModel(props, 'modelValue', emit)
 ```
+
+## Indentation
+
+Use tabs, not spaces.

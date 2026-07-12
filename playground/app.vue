@@ -8,5 +8,5 @@
 import { useNuxtAuthentication } from '../src/runtime/composables'
 
 const { verify } = useNuxtAuthentication()
-await verify('token', 'Token is invalid or expired')
+callOnce(async () => void verify('token', 'Token is invalid or expired'))
 </script>

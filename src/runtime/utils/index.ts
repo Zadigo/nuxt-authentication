@@ -1,5 +1,5 @@
-import { useRuntimeConfig } from '#imports'
-import type { TokenRefreshApiResponse, Undefineable, Emptyable } from '../types'
+import { createError, useRuntimeConfig } from '#imports'
+import type { SsrApiResponse, Undefineable } from '../types'
 
 /**
  * @private
@@ -23,28 +23,48 @@ export function getUrl(url: string, path: Undefineable<string>) {
 }
 
 /**
- * Helper function used to ask for a new access
- * token for the user
- * @param refresh - The refresh token
+ * Helper function to refresh the access token on the server side
+ * when the access token has expired and the refresh token is still valid.
+ * @param config nuxtAuthentication configuration object
+ * @param refresh The refresh token
  */
-export async function refreshAccessToken(refresh: Emptyable<string>) {
+export async function ssrRefreshAccessToken(config: ReturnType<typeof useRuntimeConfig>['public']['nuxtAuthentication'], refresh: string) {
   try {
-    const config = useRuntimeConfig().public.nuxtAuthentication
-    const response = await $fetch<TokenRefreshApiResponse>(config.refreshEndpoint || '/api/token/refresh', {
+    return await $fetch<SsrApiResponse>('/api/auth/renew', {
       baseURL: config.domain,
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: {
         refresh
       }
     })
-
-    return {
-      access: response.access
-    }
   } catch (error) {
     console.error('Failed to refresh access token:', error)
     return {
       access: null
     }
+  }
+}
+
+/**
+ * A helper function to generate the authenticated headers for API requests.
+ * @description This function generates the necessary headers for making authenticated API requests using the provided access token and bearer token type.
+ * @param accessToken The access token to be used for authentication.
+ * @param bearerTokenType The type of bearer token (default is 'Token').
+ */
+export function getAuthenticatedHeader(accessToken: Undefineable<string>, bearerTokenType: string = 'Token'): HeadersInit {
+  if (!accessToken) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Authentication required'
+    })
+  }
+
+  return {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization': `${bearerTokenType} ${accessToken}`,
   }
 }

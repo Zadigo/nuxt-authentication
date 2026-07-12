@@ -1,6 +1,11 @@
-import { addPlugin, addImports, createResolver, defineNuxtModule, installModule, addComponent } from '@nuxt/kit'
+import { addPlugin, addImports, addServerHandler, createResolver, defineNuxtModule, installModule, addComponent } from '@nuxt/kit'
 import { defu } from 'defu'
 import type { Nullable } from './runtime/types'
+import type { NitroEventHandler } from 'nitropack/types'
+
+export type ProtectedRoute = {
+  route: string
+}
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -24,6 +29,34 @@ export interface ModuleOptions {
    * @default '/api/token/access'
    */
   accessEndpoint?: string
+  /**
+   * Profile endpoint on the backend
+   * @default '/api/auth/profile'
+   */
+  profileEndpoint?: string
+  /**
+   * Profile endpoint type, either 'api' or 'graphql'
+   * @default 'api'
+   */
+  profileEndpointType?: 'api' | 'graphql'
+  /**
+   * Fields to fetch from the profile endpoint (only applicable for graphql)
+   * @default []
+   */
+  profileEndpointFields?: ('email' | 'username' | 'id' | string)[]
+  /**
+   * GraphQL query to fetch the user profile (only applicable for graphql)
+   * @default undefined
+   * @example `query { user { id, email, username } }`
+   * @example `query { profile { id, email, username } }`
+   */
+  profileGraphqlQuery?: string
+  /**
+   * Protected routes that require authentication. 
+   * If the user is not authenticated, they will be 
+   * redirected to the login page.
+   */
+  // protectedRoutes?: ProtectedRoute[]
   /**
    * Login path on Nuxt
    * @default '/login'
@@ -108,6 +141,11 @@ export default defineNuxtModule<ModuleOptions>({
     domain: '',
     refreshEndpoint: '/api/token/refresh',
     accessEndpoint: '/api/token/access',
+    profileEndpoint: '/api/auth/profile',
+    profileEndpointType: 'api',
+    profileEndpointFields: [],
+    profileGraphqlQuery: undefined,
+    // protectedRoutes: [],
     login: '/login',
     loginRedirectPath: '/',
     strategy: 'renew',
@@ -127,19 +165,20 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Deep-merge nuxt module options + user custom gtm optionss filling missing fields
+    // Deep-merge nuxt module options + user custom nuxt-authentication options filling missing fields
     const moduleOptions = defu(nuxt.options.runtimeConfig.public.nuxtAuthentication, options)
 
     // Transpile and alias runtime
     const runtimeDir = resolver.resolve('./runtime')
-    nuxt.options.alias['#ganalytics'] = runtimeDir
+    nuxt.options.alias['#nuxt-authentication'] = runtimeDir
     nuxt.options.build.transpile.push(runtimeDir)
 
     nuxt.options.runtimeConfig.public.nuxtAuthentication = moduleOptions
 
     // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`
-    addPlugin(resolver.resolve('./runtime/plugin'))
+    addPlugin(resolver.resolve('./runtime/nuxtauth.server'))
 
+    // Add composables
     const composablesPath = resolver.resolve('./runtime/composables')
     addImports([
       { name: 'useLogin', from: composablesPath },
@@ -149,11 +188,53 @@ export default defineNuxtModule<ModuleOptions>({
       { name: 'useRefreshAccessToken', from: composablesPath }
     ])
 
+    // Add utils
     const utilsPath = resolver.resolve('./runtime/utils')
     addImports([
       { name: 'refreshAccessToken', from: utilsPath },
       { name: 'refreshAccessTokenClient', from: utilsPath }
     ])
+
+    // Add server routes
+    const routes: NitroEventHandler[] = [
+      {
+        route: '/api/auth/login',
+        handler: resolver.resolve('./runtime/server/api/auth/login.post.ts')
+      },
+      {
+        route: '/api/auth/me',
+        handler: resolver.resolve('./runtime/server/api/auth/me.get.ts')
+      },
+      {
+        route: '/api/auth/renew',
+        handler: resolver.resolve('./runtime/server/api/auth/renew.post.ts')
+      },
+      {
+        route: '/api/auth/profile',
+        handler: resolver.resolve('./runtime/server/api/auth/profile.get.ts')
+      },
+      {
+        route: '/api/auth/logout',
+        handler: resolver.resolve('./runtime/server/api/auth/logout.post.ts')
+      },
+      {
+        route: '/api/auth/verify',
+        handler: resolver.resolve('./runtime/server/api/auth/verify.post.ts')
+      },
+      {
+        route: '/api/auth/has-token',
+        handler: resolver.resolve('./runtime/server/api/auth/has-token.get.ts')
+      },
+      {
+        route: '/api/auth/profile',
+        handler: resolver.resolve('./runtime/server/api/auth/profile.get.ts')
+      },
+      {
+        route: '/api/proxy/[...path]',
+        handler: resolver.resolve('./runtime/server/api/proxy/[...path].ts')
+      }
+    ]
+    routes.forEach(route => addServerHandler(route))
 
     // Add middleware from your module
     // const middlewarePath = resolver.resolve('./runtime/middleware')

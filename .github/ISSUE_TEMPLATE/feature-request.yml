@@ -1,5 +1,5 @@
 name: 🚀 Feature request
-description: Suggest a feature that will improve Nuxt Gtag
+description: Suggest a feature that will improve Nuxt Authentication
 labels: [pending triage]
 body:
   - type: markdown
@@ -30,5 +30,5 @@ body:
       label: Final checks
       description: 'Before submitting, please make sure you do the following:'
       options:
-        - label: Check existing [issues](https://github.com/Zadigo/nuxt-ganalytics/issues).
+        - label: Check existing [issues](https://github.com/Zadigo/nuxt-authentication/issues).
           required: true

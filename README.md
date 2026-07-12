@@ -9,13 +9,12 @@ Find and replace all on all files (CMD+SHIFT+F):
 
 # Nuxt Authentication
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![License][license-src]][license-href]
-[![Nuxt][nuxt-src]][nuxt-href]
+[npm version][npm-version-href]
+[npm downloads][npm-downloads-href]
+[License][license-href]
+[Nuxt][nuxt-href]
 
-Nuxt Authentication is a simple module that proposes authentication functionalities for Nuxt applications that uses backends like Django
-REST framework or Laravel Sanctum.
+Nuxt Authentication is a simple module that proposes authentication functionalities for Nuxt applications that uses backends like Django REST framework or Laravel Sanctum.
 
 - [✨ &nbsp;Release Notes](/CHANGELOG.md)
 
@@ -49,6 +48,21 @@ const { hasToken, isAuthenticated } = useNuxtAuthentication()
 
 That's it! You can now use Nuxt Authentication in your Nuxt app ✨
 
+## Architecture
+
+Nuxt Authentication uses the BFF (Backend for Frontend) pattern to handle authentication. The Nuxt server middleware acts as a proxy between the frontend and the backend, allowing for secure communication and token management.
+
+This ensures that the tokens are not exposed to the frontend, and the authentication process is handled securely on the server side.
+
+```mermaid
+flowchart LR
+
+A(Frontend) -->|Login Request| B(Nuxt Server Middleware)
+B -->|Forward Request| C(Backend API)
+C -->|Response with Tokens| B
+B -->|Set Cookies| A
+```
+
 ## Composables
 
 ### Checking for tokens
@@ -63,16 +77,38 @@ const { hasToken, isAuthenticated } = useNuxtAuthentication()
 
 > [!NOTE]
 > The `hasToken` property indicates only if there is an access token present, while the cookie
-> The `isAuthenticated` property indicates whether the user is authenticated or not based on whether the `isAuthenticated` state has been set to `true` or `false`.
+> The `isAuthenticated` property indicates whether the user is authenticated based on the success or result of the authentication process.
 > The presence of a token does not necessarily mean that the user is authenticated, as the token could be expired or invalid.
+
+### Verifying the access token
+
+You can verify the authenticity of a user's access token with the `verify` function:
+
+```vue
+<script lang="ts" setup>
+const { verify } = useNuxtAuthentication()
+</script>
+```
+
+A failed verification will trigger the user-not-authenticated workflow based on the strategy set in the module options. The default strategy is `renew`, which will attempt to refresh the access token using the refresh token.
+
+### Refreshing a token
+
+An access token can be refreshed using the ``useRefreshAccessToken``composable:
+
+```Vue
+<script lang="ts" setup>
+const { renew } = useRefreshAccessToken()
+</script>
+```
 
 ### Sending authenticated requests
 
 To ensure that all of your requests are authenticated, you can use the `$nuxtAuthentication` helper:
 
 ```ts
-const { $nuxtAuthentication } = useNuxtApp()
-const response = await $nuxtAuthentication('/api/protected-endpoint', { method: 'GET' })
+const { $authenticatedFetch } = useNuxtApp()
+const response = await $authenticatedFetch('/api/protected-endpoint', { method: 'GET' })
 ```
 
 > [!NOTE]
@@ -82,8 +118,8 @@ const response = await $nuxtAuthentication('/api/protected-endpoint', { method: 
 You can also use the `useAuthenticatedFetch` composable to create a custom fetch function that automatically attaches the access token to the `Authorization` header of your requests:
 
 ```ts
-const { authenticatedFetch } = useNuxtAuthentication()
-const response = await authenticatedFetch('/api/protected-endpoint', { method: 'GET' })
+const { execute } = authenticatedFetch()
+const response = await execute('/api/protected-endpoint', { method: 'GET' })
 ```
 
 ### Login
@@ -153,21 +189,21 @@ You can check for the user state with the `useUser` composable:
 
 ```vue
 <script lang="ts" setup>
-const { userId, isAuthenticated, getProfile } = useUser()
+const { isAuthenticated } = useUser()
 </script>
 ```
 
-`userId`
+<!-- `userId`
 
-The unique identifier of the authenticated user parsed from the [JWT token](https://jwt.io/).
+The unique identifier of the authenticated user parsed from the [JWT token](https://jwt.io/). -->
 
 `isAuthenticated`
 
 A boolean indicating whether the user is authenticated or not.
 
-`getProfile(apiEndpoint: string)`
+<!-- `getProfile(apiEndpoint: string)`
 
-A helper function which can be used to fetch the user profile from the given API endpoint in order to populate the user state.
+A helper function which can be used to fetch the user profile from the given API endpoint in order to populate the user state. -->
 
 ### Manually refreshing the access token
 
@@ -175,7 +211,7 @@ You can also manually refresh the access token with the `useRefreshAccessToken` 
 
 ```html
 <script lang="ts" setup>
-const { accessToken, renew } = useRefreshAccessToken()
+const { renew } = useRefreshAccessToken()
 await renew()
 </script>
 ```
@@ -193,6 +229,22 @@ The API endpoint to be used to refresh the access token (default: `/api/token/re
 `accessEndpoint`
 
 The API endpoint to be used to obtain a new access token (default: `/api/token/access`).
+
+`profileEndpoint`
+
+The API endpoint to be used to fetch the user profile (default: `/api/auth/profile`).
+
+`profileEndpointType`
+
+The type of the profile endpoint between `api` (e.g. restframework) and `graphql` (default: `api`).
+
+`profileEndpointFields`
+
+The fields to be fetched from the profile endpoint (applicable only for `graphql` type) (default: `[]`).
+
+`profileGraphqlQuery`
+
+The GraphQL query to be used to fetch the user profile example `user` in ``query { user { id, email, username } }`` (applicable only for `graphql` type).
 
 `login`:
 
@@ -223,6 +275,14 @@ The name of the access token cookie (default: 'access').
 `refreshTokenName`
 
 The name of the refresh token cookie (default: 'refresh').
+
+`accessTokenMaxAge`
+
+The maximum age of the access token in seconds (default: 300).
+
+`refreshTokenMaxAge`
+
+The maximum age of the refresh token in seconds (default: 1209600).
 
 ## Contribution
 

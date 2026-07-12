@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt'
   ],
 
-  compatibilityDate: '2026-04-07',
+  compatibilityDate: '2026-07-11',
 
   devtools: {
     enabled: true
