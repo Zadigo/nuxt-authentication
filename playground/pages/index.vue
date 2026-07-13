@@ -28,7 +28,7 @@
             Refresh Access Token
           </nuxt-button>
 
-          <nuxt-button color="warning" @click='async () => void verify("detail", "Token is invalid or expired")'>
+          <nuxt-button color="warning" @click='async () => void verify("Token is invalid or expired")'>
             <icon name="i-lucide:shield-check" />
             Verify Access Token
           </nuxt-button>
@@ -42,7 +42,7 @@
 
       <nuxt-card class="max-w-2xl mx-auto mt-5 space-y-4">
         <client-only>
-          <!-- <p>User ID: {{ userId }}</p> -->
+          <p>User ID: {{ userId }}</p>
           <p>Authenticated: {{ isAuthenticated }}</p>
           <p>Token verified: {{ tokenVerified }}</p>
           <p>Has token: {{ isActive }}</p>
@@ -61,18 +61,11 @@
 import { useRefreshAccessToken, useAuthenticatedFetch } from '../../src/runtime/composables'
 
 const { tokenVerified, verify, hasToken } = useNuxtAuthentication()
-const { isAuthenticated } = useUser()
+const { isAuthenticated, getUserId } = useUser()
 
-const isActive = computed(async () => (await hasToken()))
-
-// const userId = computed(async () => await getUserId())
-
-// onMounted(async () => {
-//   if (isAuthenticated.value) {
-//     await getProfile()
-//   }
-// })
-
+const isActive = computedAsync<boolean>(async () => await hasToken())
+const userId = computedAsync(() => getUserId())
+  
 async function refresh() {
   const { renew } = await useRefreshAccessToken()
   await renew()
@@ -91,4 +84,5 @@ async function authenticatedFetch() {
   const response = await execute()
   console.log('Authenticated fetch response:', response)
 }
+
 </script>

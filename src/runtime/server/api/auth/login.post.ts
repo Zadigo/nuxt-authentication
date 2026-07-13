@@ -1,21 +1,16 @@
 import { setCookie, readBody} from 'h3'
 import { useRuntimeConfig, defineEventHandler } from '#imports'
-import type { LoginApiResponse } from '../../../types'
-
-type LoginResponse = {
-  success: boolean
-  detail?: string
-}
+import type { DjangoLoginResponse, BaseSsrResponse, BaseDjangoResponse } from '../../../types'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const config = useRuntimeConfig(event)
   const endpoint = config.public.nuxtAuthentication.accessEndpoint || '/api/token/access'
   
-  const responseTemplate: LoginResponse = { success: false }
+  const responseTemplate: BaseSsrResponse & Partial<Pick<BaseDjangoResponse, 'detail'>> = { success: false }
 
   try {
-    const data = await $fetch<LoginApiResponse>(endpoint, {
+    const data = await $fetch<DjangoLoginResponse>(endpoint, {
       baseURL: config.public.nuxtAuthentication.domain,
       method: 'POST',
       body
@@ -42,6 +37,5 @@ export default defineEventHandler(async (event) => {
     responseTemplate.detail = (error as any)?.data?.detail || 'Login failed'
   }
 
-  // Only return non-sensitive info to the client
   return responseTemplate
 })

@@ -1,10 +1,6 @@
 <template>
   <section class="my-20 space-y-2">
     <nuxt-container class="max-w-2xl mx-auto">
-      <p>User ID: {{ userId }}</p>
-      <p>Authenticated: {{ isAuthenticated }}</p>
-      <p>Profile: {{ profile }}</p>
-
       <nuxt-card>
         <div class="space-y-4">
           <nuxt-input v-model="usernameField" class="w-full" placeholder="Email" />
@@ -25,7 +21,4 @@
 
 <script lang="ts" setup>
 const { usernameField, password, login } = useLogin('username')
-const { userId, isAuthenticated, getProfile } = useUser<{ data: { user: { id: string } } }>()
-
-const profile = getProfile('/graphql/', { query: `query { user { id } }` }, 'POST')
 </script>

@@ -1,16 +1,13 @@
 import { useJwt } from '@vueuse/integrations/useJwt'
 import { defineEventHandler, useRuntimeConfig } from '#imports'
-import { getCookie, setCookie, createError } from 'h3'
+import { getCookie, setCookie } from 'h3'
 import type { JWTResponseData } from '../../../types'
 
 export default defineEventHandler((event) => {
   const config = useRuntimeConfig(event)
 
   const access = getCookie(event, config.public.nuxtAuthentication.accessTokenName || 'access')
-  if (!access) throw createError({
-    statusCode: 401,
-    statusMessage: 'No access token found'
-  })
+  if (!access) return { id: null }
 
   const { payload } = useJwt<JWTResponseData>(access)
   const userId = payload.value?.user_id

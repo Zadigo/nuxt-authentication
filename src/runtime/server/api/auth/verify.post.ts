@@ -1,27 +1,24 @@
 import { getCookie } from 'h3'
 import { useRuntimeConfig, defineEventHandler } from '#imports'
-import type { VerifyTokenApiResponse } from '../../../types'
+import type { BaseSsrResponse, BaseDjangoResponse } from '../../../types'
 import { getAuthenticatedHeader } from '../../../../runtime/utils'
-
-type LoginResponse = {
-  success: boolean
-  detail?: string
-}
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
   
-  const responseTemplate: LoginResponse = { success: false }
+  const responseTemplate: BaseSsrResponse & Partial<Pick<BaseDjangoResponse, 'detail'>> = { success: false }
   
   const access = getCookie(event, config.public.nuxtAuthentication.accessTokenName || 'access')
   if (!access) {
     responseTemplate.detail = 'Access token not found'
     return responseTemplate
   }
+
+  console.log(getAuthenticatedHeader(access, config.public.nuxtAuthentication.bearerTokenType))
   
   try {
     const endpoint = config.public.nuxtAuthentication.verifyEndpoint || '/api/token/verify'
-    const data = await $fetch<VerifyTokenApiResponse>(endpoint, {
+    const data = await $fetch<BaseDjangoResponse>(endpoint, {
       baseURL: config.public.nuxtAuthentication.domain,
       method: 'POST',
       headers: getAuthenticatedHeader(access, config.public.nuxtAuthentication.bearerTokenType || 'Token'),
@@ -29,8 +26,6 @@ export default defineEventHandler(async (event) => {
         token: access
       }
     })
-
-    console.log('Token verification response:', data)
     
     // When the verification is valid, Django does not 
     // return any data, so we check for the absence of 'detail' 
@@ -43,6 +38,5 @@ export default defineEventHandler(async (event) => {
     responseTemplate.detail = (error as any)?.data?.detail || 'Refresh failed'
   }
 
-  // Only return non-sensitive info to the client
   return responseTemplate
 })

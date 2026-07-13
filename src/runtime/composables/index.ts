@@ -1,7 +1,9 @@
 import { computed, createError, isDefined, ref, useRouter, useRuntimeConfig, useState, preloadRouteComponents, useNuxtApp } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
-import type { LoginApiResponse, SsrApiResponse } from '../types'
+import type { BaseSsrResponse, BaseDjangoResponse } from '../types'
+
+export type VerifyResponse = BaseSsrResponse & Partial<Pick<BaseDjangoResponse, 'detail'>>
 
 /**
  * Global state to manage authentication status. This composable
@@ -24,9 +26,12 @@ export const useNuxtAuthentication = createGlobalState(() => {
 
   const [tokenVerified, toggleTokenVerified] = useToggle(false)
 
-  async function verify(verificationValue?: string): Promise<LoginApiResponse | undefined> {
+  async function verify(verificationValue?: string): Promise<VerifyResponse | undefined> {
     try {
-      const response = await $fetch<LoginApiResponse>('/api/auth/verify')
+      const response = await $fetch<VerifyResponse>('/api/auth/verify', {
+        method: 'POST'
+      })
+      
       const value = response.detail
       
       if (!isDefined(value)) {
@@ -128,7 +133,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
  * @param throttle - Throttle time in milliseconds which limits how often the login function can be called
  * @param redirectPath Custom redirect path after login that overrides the one in the config
  */
-export function useLogin<T extends SsrApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000, redirectPath?: string) {
+export function useLogin<T extends BaseSsrResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000, redirectPath?: string) {
   const { count, inc: incrementFailureCount } = useCounter()
 
   const usernameField = ref<string>('')
@@ -227,7 +232,7 @@ export function useUser() {
   const isAuthenticated = useState('isAuthenticated')
 
   async function getUserId() {
-    return await $fetch<{ user_id: string }>('/api/auth/me')
+    return await $fetch<{ id: string }>('/api/auth/me')
   }
 
   return {

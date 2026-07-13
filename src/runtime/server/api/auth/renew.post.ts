@@ -1,6 +1,6 @@
 import { setCookie } from 'h3'
 import { useRuntimeConfig, defineEventHandler, getCookie } from '#imports'
-import type { TokenRefreshApiResponse, SsrApiResponse } from '../../../../runtime/types'
+import type { BaseSsrResponse, BaseDjangoResponse, DjangoLoginResponse } from '../../../../runtime/types'
 import { getAuthenticatedHeader } from '../../../utils'
 
 
@@ -8,13 +8,13 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event).public.nuxtAuthentication
   const endpoint = config.refreshEndpoint || '/api/token/refresh'
 
-  const responseTemplate: SsrApiResponse = { success: false }
+  const responseTemplate: BaseSsrResponse & Partial<Pick<BaseDjangoResponse, 'detail'>> = { success: false }
 
   const access = getCookie(event, config.accessTokenName || 'access')
   const refresh = getCookie(event, config.refreshTokenName || 'refresh')
 
   try {
-    const data = await $fetch<TokenRefreshApiResponse>(endpoint, {
+    const data = await $fetch<Pick<DjangoLoginResponse, 'access'>>(endpoint, {
       baseURL: config.domain,
       method: 'POST',
       headers: getAuthenticatedHeader(access, config.bearerTokenType || 'Token'),
@@ -43,6 +43,5 @@ export default defineEventHandler(async (event) => {
     responseTemplate.detail = (error as any)?.data?.detail || 'Token refresh failed'
   }
 
-  // Only return non-sensitive info to the client
   return responseTemplate
 })

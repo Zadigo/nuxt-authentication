@@ -4,25 +4,18 @@ export type Nullable<T> = T | null
 
 export type Emptyable<T> = T | null | undefined
 
-export interface LoginApiResponse {
-  access: string
-  refresh: string
+export type BaseDjangoResponse = {
   detail?: string
+  code?: string
 }
 
-export type SsrApiResponse = Partial<Pick<LoginApiResponse, 'detail'>> & {
+export type BaseSsrResponse = {
   success: boolean
 }
 
-export type SsrMeApiResponse = {
-  user_id: number
-}
-
-export type TokenRefreshApiResponse = Omit<LoginApiResponse, 'refresh'>
-
-export type VerifyTokenApiResponse = {
-  detail: string
-  code: string
+export interface DjangoLoginResponse {
+  access: string
+  refresh: string
 }
 
 /**

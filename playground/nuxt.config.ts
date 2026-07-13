@@ -13,13 +13,11 @@ export default defineNuxtConfig({
         enabled: true,
         accessEndpoint: '/auth/v1/token/',
         refreshEndpoint: '/auth/v1/token/refresh/',
-        profileEndpoint: '/v1/accounts/profile',
-        profileEndpointType: 'api',
+        verifyEndpoint: '/auth/v1/token/verify/',
         login: '/login',
         loginRedirectPath: '/',
         strategy: 'renew',
         bearerTokenType: 'Token',
-        verifyEndpoint: '/auth/v1/token/verify/',
         accessTokenMaxAge: 15 * 60, // 15 minutes
         refreshTokenMaxAge: 7 * 24 * 60 * 60, // 7 days
         // autoVerifyToken: true,
