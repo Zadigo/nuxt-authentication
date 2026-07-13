@@ -1,5 +1,5 @@
 import { setCookie, readBody} from 'h3'
-import { useRuntimeConfig, defineEventHandler } from '#imports'
+import { useRuntimeConfig, defineEventHandler, createError } from '#imports'
 import type { DjangoLoginResponse, BaseSsrResponse, BaseDjangoResponse } from '../../../types'
 import { generateErrorTemplate } from '../../../utils'
 
@@ -41,6 +41,7 @@ export default defineEventHandler(async (event) => {
     })
     return responseTemplate
   } catch (error) {
-    throw generateErrorTemplate(error)
+    const template = generateErrorTemplate(error)
+    throw createError(template)
   }
 })
