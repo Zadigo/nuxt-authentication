@@ -1,3 +1,7 @@
+## v2.1.0
+
+[compare changes](https://github.com/Zadigo/nuxt-authentication/compare/v2.0.0...v2.1.0)
+
 ## v2.0.0
 
 [compare changes](https://github.com/Zadigo/nuxt-authentication/compare/v1.1.0...v2.0.0)
