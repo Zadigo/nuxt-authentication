@@ -1,15 +1,14 @@
 import { defineEventHandler, useRuntimeConfig } from '#imports'
 import { getCookie } from 'h3'
-
-export interface JWTResponseData {
-  /**
-   * User ID of the authenticated user
-   */
-  user_id: number
-}
+import { generateErrorTemplate } from '../../../utils'
 
 export default defineEventHandler((event) => {
-  const config = useRuntimeConfig(event)
-  const access = getCookie(event, config.public.nuxtAuthentication.accessTokenName || 'access')
-  return { status: !!access }
+  try {
+    const config = useRuntimeConfig(event)
+    const access = getCookie(event, config.public.nuxtAuthentication.accessTokenName || 'access')
+    return { status: !!access }
+  } catch (error) {
+    console.error('Error checking token:', generateErrorTemplate(error))
+    return { status: false }
+  }
 })

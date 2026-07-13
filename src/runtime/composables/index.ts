@@ -1,7 +1,9 @@
-import { computed, createError, isDefined, ref, useRouter, useRuntimeConfig, useState, preloadRouteComponents, useNuxtApp } from '#imports'
+import { computed, createError, isDefined, ref, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
-import type { LoginApiResponse, SsrApiResponse } from '../types'
+import type { BaseSsrResponse, BaseDjangoResponse } from '../types'
+
+export type VerifyResponse = BaseSsrResponse & Partial<Pick<BaseDjangoResponse, 'detail'>>
 
 /**
  * Global state to manage authentication status. This composable
@@ -24,9 +26,12 @@ export const useNuxtAuthentication = createGlobalState(() => {
 
   const [tokenVerified, toggleTokenVerified] = useToggle(false)
 
-  async function verify(verificationValue?: string): Promise<LoginApiResponse | undefined> {
+  async function verify(verificationValue?: string): Promise<VerifyResponse | undefined> {
     try {
-      const response = await $fetch<LoginApiResponse>('/api/auth/verify')
+      const response = await $fetch<VerifyResponse>('/api/auth/verify', {
+        method: 'POST'
+      })
+
       const value = response.detail
       
       if (!isDefined(value)) {
@@ -128,7 +133,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
  * @param throttle - Throttle time in milliseconds which limits how often the login function can be called
  * @param redirectPath Custom redirect path after login that overrides the one in the config
  */
-export function useLogin<T extends SsrApiResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000, redirectPath?: string) {
+export function useLogin<T extends BaseSsrResponse>(usernameFieldName: 'email' | 'username' = 'email', throttle: number = 3000, redirectPath?: string) {
   const { count, inc: incrementFailureCount } = useCounter()
 
   const usernameField = ref<string>('')
@@ -226,18 +231,9 @@ export async function useLogout(redirectPath?: string) {
 export function useUser() {
   const isAuthenticated = useState('isAuthenticated')
 
-  // async function getUserId() {
-  //   return await $fetch<{ user_id: string }>('/api/auth/me')
-  // }
-
-  // async function getProfile() {
-  //   const data = await getUserId()
-  //   return await $fetch<P>('/api/auth/profile', {
-  //     query: {
-  //       id: data.user_id
-  //     }
-  //   })
-  // }
+  async function getUserId() {
+    return await $fetch<{ id: string }>('/api/auth/me')
+  }
 
   return {
     /**
@@ -246,13 +242,9 @@ export function useUser() {
      */
     isAuthenticated,
     /**
-     * Function to get the user's profile
-     */
-    // getProfile,
-    /**
      * Function to get the user's ID
      */
-    // getUserId
+    getUserId
   }
 }
 
@@ -267,7 +259,9 @@ export function useUser() {
  */
 export async function useRefreshAccessToken(throttle: number = 5000) {
   async function renew() {
-    const result = await $fetch<{ status: boolean }>('/api/auth/renew')
+    const result = await $fetch<{ status: boolean }>('/api/auth/renew', {
+      method: 'POST'
+    })
     
     if (result.status) {
       useState<boolean>('isAuthenticated').value = true
@@ -289,19 +283,14 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
  * @param request The request URL or NitroFetchRequest object
  * @param options Options for the fetch request
  */
-export function useAuthenticatedFetch<T extends Record<string, unknown>>(request: NitroFetchRequest, options?: NitroFetchOptions<NitroFetchRequest, 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'>) {
-  const { $authenticatedFetch } = useNuxtApp()
-
-  const execute = async () => {
-    try {
-      return await $authenticatedFetch<T>(request, options)
-    } catch (error: any) {
-      throw createError({
-        statusCode: error?.response?.status || 500,
-        statusMessage: error?.response?._data?.detail || 'Authenticated fetch request failed'
-      })
-    }
-  }  
+export function useAuthenticatedFetch<T extends Record<string, unknown>>(path: NitroFetchRequest, options?: NitroFetchOptions<NitroFetchRequest, 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'>) {
+  async function execute() {
+    const body = { path: path, options}
+    return await $fetch<T>('/api/proxy/django', {
+      method: 'POST',
+      body
+    })
+  }
 
   return {
     execute

@@ -1,4 +1,4 @@
-import { addPlugin, addImports, addServerHandler, createResolver, defineNuxtModule, installModule, addComponent } from '@nuxt/kit'
+import { addImports, addServerHandler, createResolver, defineNuxtModule, installModule, addComponent } from '@nuxt/kit'
 import { defu } from 'defu'
 import type { Nullable } from './runtime/types'
 import type { NitroEventHandler } from 'nitropack/types'
@@ -30,28 +30,6 @@ export interface ModuleOptions {
    */
   accessEndpoint?: string
   /**
-   * Profile endpoint on the backend
-   * @default '/api/auth/profile'
-   */
-  profileEndpoint?: string
-  /**
-   * Profile endpoint type, either 'api' or 'graphql'
-   * @default 'api'
-   */
-  profileEndpointType?: 'api' | 'graphql'
-  /**
-   * Fields to fetch from the profile endpoint (only applicable for graphql)
-   * @default []
-   */
-  profileEndpointFields?: ('email' | 'username' | 'id' | string)[]
-  /**
-   * GraphQL query to fetch the user profile (only applicable for graphql)
-   * @default undefined
-   * @example `query { user { id, email, username } }`
-   * @example `query { profile { id, email, username } }`
-   */
-  profileGraphqlQuery?: string
-  /**
    * Protected routes that require authentication. 
    * If the user is not authenticated, they will be 
    * redirected to the login page.
@@ -77,7 +55,7 @@ export interface ModuleOptions {
    *
    * @default 'renew'
    */
-  strategy?: 'renew' | 'login' | 'fail' | (string & {})
+  strategy?: 'renew' | 'login' | 'fail' | 'do_nothing' | (string & {})
   /**
    * Optional bearer token type
    * @default 'Token'
@@ -141,10 +119,6 @@ export default defineNuxtModule<ModuleOptions>({
     domain: '',
     refreshEndpoint: '/api/token/refresh',
     accessEndpoint: '/api/token/access',
-    profileEndpoint: '/api/auth/profile',
-    profileEndpointType: 'api',
-    profileEndpointFields: [],
-    profileGraphqlQuery: undefined,
     // protectedRoutes: [],
     login: '/login',
     loginRedirectPath: '/',
@@ -155,7 +129,7 @@ export default defineNuxtModule<ModuleOptions>({
     verifyEndpoint: '/api/token/verify',
     // autoVerifyToken: false,
     // autoVerifyTokenInterval: 60,
-    accessTokenMaxAge: null,
+    accessTokenMaxAge: 60 * 15,
     refreshTokenMaxAge: 60 * 60 * 24 * 7 // 7 days
   },
   meta: {
@@ -176,7 +150,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.runtimeConfig.public.nuxtAuthentication = moduleOptions
 
     // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`
-    addPlugin(resolver.resolve('./runtime/nuxtauth.server'))
+    // addPlugin(resolver.resolve('./runtime/nuxtauth'))
 
     // Add composables
     const composablesPath = resolver.resolve('./runtime/composables')
@@ -191,8 +165,8 @@ export default defineNuxtModule<ModuleOptions>({
     // Add utils
     const utilsPath = resolver.resolve('./runtime/utils')
     addImports([
-      { name: 'refreshAccessToken', from: utilsPath },
-      { name: 'refreshAccessTokenClient', from: utilsPath }
+      { name: 'ssrRefreshAccessToken', from: utilsPath },
+      { name: 'getAuthenticatedHeader', from: utilsPath }
     ])
 
     // Add server routes
@@ -210,10 +184,6 @@ export default defineNuxtModule<ModuleOptions>({
         handler: resolver.resolve('./runtime/server/api/auth/renew.post')
       },
       {
-        route: '/api/auth/profile',
-        handler: resolver.resolve('./runtime/server/api/auth/profile.get')
-      },
-      {
         route: '/api/auth/logout',
         handler: resolver.resolve('./runtime/server/api/auth/logout.post')
       },
@@ -226,12 +196,8 @@ export default defineNuxtModule<ModuleOptions>({
         handler: resolver.resolve('./runtime/server/api/auth/has-token.get')
       },
       {
-        route: '/api/auth/profile',
-        handler: resolver.resolve('./runtime/server/api/auth/profile.get')
-      },
-      {
-        route: '/api/proxy/[...path]',
-        handler: resolver.resolve('./runtime/server/api/proxy/[...path]')
+        route: '/api/proxy/django',
+        handler: resolver.resolve('./runtime/server/api/proxy/django.post')
       }
     ]
     routes.forEach(route => addServerHandler(route))

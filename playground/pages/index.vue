@@ -28,24 +28,25 @@
             Refresh Access Token
           </nuxt-button>
 
-          <nuxt-button color="warning" @click='async () => void verify("detail", "Token is invalid or expired")'>
+          <nuxt-button color="neutral" @click='async () => void verify("Token is invalid or expired")'>
             <icon name="i-lucide:shield-check" />
             Verify Access Token
           </nuxt-button>
 
-          <!-- <nuxt-button color="warning" @click='async () => void getProfile()'>
+          <nuxt-button color="neutral" @click='async () => void executeUnprotected()'>
             <icon name="i-lucide:user" />
-            Get profile
-          </nuxt-button> -->
+            Unprotected
+          </nuxt-button>
         </div>
       </nuxt-card>
 
       <nuxt-card class="max-w-2xl mx-auto mt-5 space-y-4">
         <client-only>
-          <!-- <p>User ID: {{ userId }}</p> -->
+          <p>User ID: {{ userId }}</p>
           <p>Authenticated: {{ isAuthenticated }}</p>
           <p>Token verified: {{ tokenVerified }}</p>
           <p>Has token: {{ isActive }}</p>
+          <p>Fetch: {{ response }}</p>
         </client-only>
 
         <nuxt-button color="error" @click="() => useLogout()">
@@ -61,18 +62,11 @@
 import { useRefreshAccessToken, useAuthenticatedFetch } from '../../src/runtime/composables'
 
 const { tokenVerified, verify, hasToken } = useNuxtAuthentication()
-const { isAuthenticated } = useUser()
+const { isAuthenticated, getUserId } = useUser()
 
-const isActive = computed(async () => (await hasToken()))
-
-// const userId = computed(async () => await getUserId())
-
-// onMounted(async () => {
-//   if (isAuthenticated.value) {
-//     await getProfile()
-//   }
-// })
-
+const isActive = computedAsync<boolean>(async () => await hasToken())
+const userId = computedAsync(() => getUserId())
+  
 async function refresh() {
   const { renew } = await useRefreshAccessToken()
   await renew()
@@ -85,10 +79,17 @@ async function refresh() {
 
 const { execute } = useAuthenticatedFetch<{ id: number, username: string, email: string }>('/v1/accounts/profile', {
   baseURL: 'http://127.0.0.1:8000',
+  method: 'GET'
 })
 
+const { execute: executeUnprotected } = useAuthenticatedFetch<{ message: string }>('/v1/accounts/unprotected', {
+  baseURL: 'http://127.0.0.1:8000',
+  method: 'GET'
+})
+
+const response = ref<{ id: number, username: string, email: string } | null>(null)
 async function authenticatedFetch() {
-  const response = await execute()
-  console.log('Authenticated fetch response:', response)
+  response.value = await execute()
+  console.log('Authenticated fetch response:', response.value)
 }
 </script>

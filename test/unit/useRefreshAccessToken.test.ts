@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { useRefreshAccessToken } from '../../src/runtime/composables'
+import { useState } from '#imports'
 
 
 describe('useRefreshAccessToken', () => {
@@ -26,6 +27,6 @@ describe('useRefreshAccessToken', () => {
     const isAuthenticatedState = useState<boolean>('isAuthenticated')
     expect(isAuthenticatedState.value).toBe(true)
 
-    expect($fetch).toHaveBeenCalledWith('/api/auth/renew')
+    expect($fetch).toHaveBeenCalledWith('/api/auth/renew', { method: 'POST' })
   })
 })
