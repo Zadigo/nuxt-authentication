@@ -1,4 +1,4 @@
-import { addPlugin, addImports, addServerHandler, createResolver, defineNuxtModule, installModule, addComponent } from '@nuxt/kit'
+import { addImports, addServerHandler, createResolver, defineNuxtModule, installModule, addComponent } from '@nuxt/kit'
 import { defu } from 'defu'
 import type { Nullable } from './runtime/types'
 import type { NitroEventHandler } from 'nitropack/types'
@@ -150,7 +150,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.runtimeConfig.public.nuxtAuthentication = moduleOptions
 
     // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`
-    addPlugin(resolver.resolve('./runtime/nuxtauth'))
+    // addPlugin(resolver.resolve('./runtime/nuxtauth'))
 
     // Add composables
     const composablesPath = resolver.resolve('./runtime/composables')
@@ -196,8 +196,8 @@ export default defineNuxtModule<ModuleOptions>({
         handler: resolver.resolve('./runtime/server/api/auth/has-token.get')
       },
       {
-        route: '/api/proxy/[...path]',
-        handler: resolver.resolve('./runtime/server/api/proxy/[...path]')
+        route: '/api/proxy/django',
+        handler: resolver.resolve('./runtime/server/api/proxy/django.post')
       }
     ]
     routes.forEach(route => addServerHandler(route))

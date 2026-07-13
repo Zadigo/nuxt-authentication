@@ -1,4 +1,4 @@
-import { computed, createError, isDefined, ref, useRouter, useRuntimeConfig, useState, preloadRouteComponents, useNuxtApp } from '#imports'
+import { computed, createError, isDefined, ref, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
 import type { BaseSsrResponse, BaseDjangoResponse } from '../types'
@@ -283,12 +283,14 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
  * @param request The request URL or NitroFetchRequest object
  * @param options Options for the fetch request
  */
-export function useAuthenticatedFetch<T extends Record<string, unknown>>(request: NitroFetchRequest, options?: NitroFetchOptions<NitroFetchRequest, 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'>) {
-  const { $authenticatedFetch } = useNuxtApp()
-
-  const execute = async () => {
-    return await $authenticatedFetch<T>(request, options)
-  }  
+export function useAuthenticatedFetch<T extends Record<string, unknown>>(path: NitroFetchRequest, options?: NitroFetchOptions<NitroFetchRequest, 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'>) {
+  async function execute() {
+    const body = { path: path, options}
+    return await $fetch<T>('/api/proxy/django', {
+      method: 'POST',
+      body
+    })
+  }
 
   return {
     execute
