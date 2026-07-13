@@ -199,39 +199,39 @@ export default defineNuxtModule<ModuleOptions>({
     const routes: NitroEventHandler[] = [
       {
         route: '/api/auth/login',
-        handler: resolver.resolve('./runtime/server/api/auth/login.post.ts')
+        handler: resolver.resolve('./runtime/server/api/auth/login.post')
       },
       {
         route: '/api/auth/me',
-        handler: resolver.resolve('./runtime/server/api/auth/me.get.ts')
+        handler: resolver.resolve('./runtime/server/api/auth/me.get')
       },
       {
         route: '/api/auth/renew',
-        handler: resolver.resolve('./runtime/server/api/auth/renew.post.ts')
+        handler: resolver.resolve('./runtime/server/api/auth/renew.post')
       },
       {
         route: '/api/auth/profile',
-        handler: resolver.resolve('./runtime/server/api/auth/profile.get.ts')
+        handler: resolver.resolve('./runtime/server/api/auth/profile.get')
       },
       {
         route: '/api/auth/logout',
-        handler: resolver.resolve('./runtime/server/api/auth/logout.post.ts')
+        handler: resolver.resolve('./runtime/server/api/auth/logout.post')
       },
       {
         route: '/api/auth/verify',
-        handler: resolver.resolve('./runtime/server/api/auth/verify.post.ts')
+        handler: resolver.resolve('./runtime/server/api/auth/verify.post')
       },
       {
         route: '/api/auth/has-token',
-        handler: resolver.resolve('./runtime/server/api/auth/has-token.get.ts')
+        handler: resolver.resolve('./runtime/server/api/auth/has-token.get')
       },
       {
         route: '/api/auth/profile',
-        handler: resolver.resolve('./runtime/server/api/auth/profile.get.ts')
+        handler: resolver.resolve('./runtime/server/api/auth/profile.get')
       },
       {
         route: '/api/proxy/[...path]',
-        handler: resolver.resolve('./runtime/server/api/proxy/[...path].ts')
+        handler: resolver.resolve('./runtime/server/api/proxy/[...path]')
       }
     ]
     routes.forEach(route => addServerHandler(route))
