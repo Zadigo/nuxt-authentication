@@ -252,7 +252,7 @@ export function useUser() {
     /**
      * Function to get the user's ID
      */
-    getUserId
+    // getUserId
   }
 }
 
