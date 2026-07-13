@@ -1,6 +1,6 @@
 {
   "name": "nuxt-authentication",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Nuxt Authentication is a simple module that proposes authentication functionalities for Nuxt applications that use backends like Django REST framework or Laravel Sanctum.",
   "repository": "https://github.com/Zadigo/nuxt-authentication",
   "license": "MIT",
@@ -46,7 +46,7 @@
     "release:patch": "npm run lint & npm run test && npm run prepack && changelogen --release --patch && npm publish && git push --follow-tags",
     "lint": "oxlint lint .",
     "lint:eslint": "eslint .",
-    "test": "vitest run --coverage",
+    "test": "vitest run --coverage --tags-filter=unit",
     "test:watch": "vitest watch --coverage",
     "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
     "test:release": "npm run lint & npm run test && npm run prepack && changelogen --release --patch --no-commit --no-tag"
