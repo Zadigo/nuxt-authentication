@@ -12,34 +12,32 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
   const access = getCookie(event, config.public.nuxtAuthentication.accessTokenName || 'access')
 
-  console.log('Access token from cookies:', access)
-  if (!access) {
-    // throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
-    console.log('No access token found in cookies. Returning 401 Unauthorized.')
-  }
+  // if (!access) {
+  //   throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
+  // }
+  
+  console.log('Access token found, proceeding with proxy request...', access)
 
-  const path = event.context.params?.path
-  const method = event.method
-  const query = getQuery(event)
-  const body = ['POST', 'PUT', 'PATCH'].includes(method) ? await readBody(event) : undefined
+  // const path = event.context.params?.path
+  // const method = event.method
+  // const query = getQuery(event)
+  // const body = ['POST', 'PUT', 'PATCH'].includes(method) ? await readBody(event) : undefined
 
-  try {
-    console.log(`Proxying request to Django backend: ${method} /${path}`, { query, body }, access)
-    return await $fetch(`/${path}`, {
-      baseURL: config.public.nuxtAuthentication.domain,
-      method,
-      query,
-      body,
-      headers: {
-        Authorization: `${config.public.nuxtAuthentication.bearerTokenType} ${access}`
-      }
-    })
-  } catch (error: any) {
-    console.log(`Proxying request to Django backend: ${method} /${path}`, { query, body }, access)
-    // Forward Django's actual status/message instead of masking it as a 500
-    throw createError({
-      statusCode: error?.response?.status || 500,
-      statusMessage: error?.response?._data?.detail || 'Upstream request failed'
-    })
-  }
+  // try {
+  //   return await $fetch(`/${path}`, {
+  //     baseURL: config.public.nuxtAuthentication.domain,
+  //     method,
+  //     query,
+  //     body,
+  //     headers: {
+  //       Authorization: `${config.public.nuxtAuthentication.bearerTokenType} ${access}`
+  //     }
+  //   })
+  // } catch (error: any) {
+  //   // Forward Django's actual status/message instead of masking it as a 500
+  //   throw createError({
+  //     statusCode: error?.response?.status || 500,
+  //     statusMessage: error?.response?._data?.detail || 'Upstream request failed'
+  //   })
+  // }
 })

@@ -1,5 +1,6 @@
 import { createError, useRuntimeConfig } from '#imports'
-import type { SsrApiResponse, Undefineable } from '../types'
+import type { DjangoLoginResponse, Undefineable } from '../types'
+import { FetchError } from 'ofetch'
 
 /**
  * @private
@@ -30,7 +31,7 @@ export function getUrl(url: string, path: Undefineable<string>) {
  */
 export async function ssrRefreshAccessToken(config: ReturnType<typeof useRuntimeConfig>['public']['nuxtAuthentication'], refresh: string) {
   try {
-    return await $fetch<SsrApiResponse>('/api/auth/renew', {
+    return await $fetch<Partial<Pick<DjangoLoginResponse, 'access'>>>('/api/auth/renew', {
       baseURL: config.domain,
       method: 'POST',
       headers: {
@@ -67,4 +68,25 @@ export function getAuthenticatedHeader(accessToken: Undefineable<string>, bearer
     'Accept': 'application/json',
     'Authorization': `${bearerTokenType} ${accessToken}`,
   }
+}
+
+/**
+ * Creates a standardized error template based on the provided error object.
+ * This function is useful for generating consistent error responses in API handlers. 
+ * @param error The error object to generate the template from.
+ */
+export function generateErrorTemplate(error: Error | FetchError | unknown): { statusCode: number; statusMessage: string } {
+  const template: Record<string, string | number> = {
+    statusCode: 500,
+    statusMessage: 'An unknown error occurred'
+  }
+
+  if (error instanceof Error) {
+    template.statusMessage = error.message
+  } else if (error instanceof FetchError) {
+    template.statusCode = error.response?.status || 500
+    template.statusMessage = error.response?._data?.detail || `${error}`
+  }
+
+  return template as { statusCode: number; statusMessage: string }
 }

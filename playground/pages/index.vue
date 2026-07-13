@@ -28,12 +28,12 @@
             Refresh Access Token
           </nuxt-button>
 
-          <nuxt-button color="warning" @click='async () => void verify("Token is invalid or expired")'>
+          <nuxt-button color="neutral" @click='async () => void verify("Token is invalid or expired")'>
             <icon name="i-lucide:shield-check" />
             Verify Access Token
           </nuxt-button>
 
-          <nuxt-button color="warning" @click='async () => void executeUnprotected()'>
+          <nuxt-button color="neutral" @click='async () => void executeUnprotected()'>
             <icon name="i-lucide:user" />
             Unprotected
           </nuxt-button>

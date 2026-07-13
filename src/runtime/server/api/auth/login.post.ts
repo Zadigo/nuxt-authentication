@@ -1,15 +1,16 @@
 import { setCookie, readBody} from 'h3'
 import { useRuntimeConfig, defineEventHandler } from '#imports'
 import type { DjangoLoginResponse, BaseSsrResponse, BaseDjangoResponse } from '../../../types'
+import { generateErrorTemplate } from '../../../utils'
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  const config = useRuntimeConfig(event)
-  const endpoint = config.public.nuxtAuthentication.accessEndpoint || '/api/token/access'
-  
-  const responseTemplate: BaseSsrResponse & Partial<Pick<BaseDjangoResponse, 'detail'>> = { success: false }
-
   try {
+    const body = await readBody(event)
+    const config = useRuntimeConfig(event)
+    const endpoint = config.public.nuxtAuthentication.accessEndpoint || '/api/token/access'
+    
+    const responseTemplate: BaseSsrResponse & Partial<Pick<BaseDjangoResponse, 'detail'>> = { success: false }
+
     const data = await $fetch<DjangoLoginResponse>(endpoint, {
       baseURL: config.public.nuxtAuthentication.domain,
       method: 'POST',
@@ -38,9 +39,8 @@ export default defineEventHandler(async (event) => {
       sameSite: 'strict',
       maxAge: config.public.nuxtAuthentication.refreshTokenMaxAge || 60 * 60 * 24 * 7
     })
+    return responseTemplate
   } catch (error) {
-    responseTemplate.detail = (error as any)?.data?.detail || 'Login failed'
+    throw generateErrorTemplate(error)
   }
-
-  return responseTemplate
 })

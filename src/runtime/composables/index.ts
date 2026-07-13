@@ -259,7 +259,9 @@ export function useUser() {
  */
 export async function useRefreshAccessToken(throttle: number = 5000) {
   async function renew() {
-    const result = await $fetch<{ status: boolean }>('/api/auth/renew')
+    const result = await $fetch<{ status: boolean }>('/api/auth/renew', {
+      method: 'POST'
+    })
     
     if (result.status) {
       useState<boolean>('isAuthenticated').value = true
