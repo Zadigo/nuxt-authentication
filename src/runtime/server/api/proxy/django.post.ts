@@ -27,7 +27,6 @@ export default defineEventHandler(async (event) => {
       'Authorization': `${config.public.nuxtAuthentication.bearerTokenType} ${access}`,
       'Content-Type': 'application/json'
     }
-    console.log('Proxying request to Django backend:', requestBody.path, 'with options:', requestBody.options)
     return $fetch(requestBody.path, requestBody.options)
   } catch (error) {
     const template = generateErrorTemplate(error)
