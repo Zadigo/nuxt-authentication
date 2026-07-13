@@ -287,16 +287,7 @@ export function useAuthenticatedFetch<T extends Record<string, unknown>>(request
   const { $authenticatedFetch } = useNuxtApp()
 
   const execute = async () => {
-    try {
-      return await $authenticatedFetch<T>(request, options)
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('Authenticated fetch failed:', error.message)
-      } else {
-        console.error('Authenticated fetch failed with unknown error:', error)
-      }
-      throw error
-    }
+    return await $authenticatedFetch<T>(request, options)
   }  
 
   return {

@@ -165,8 +165,8 @@ export default defineNuxtModule<ModuleOptions>({
     // Add utils
     const utilsPath = resolver.resolve('./runtime/utils')
     addImports([
-      { name: 'refreshAccessToken', from: utilsPath },
-      { name: 'refreshAccessTokenClient', from: utilsPath }
+      { name: 'ssrRefreshAccessToken', from: utilsPath },
+      { name: 'getAuthenticatedHeader', from: utilsPath }
     ])
 
     // Add server routes

@@ -42,6 +42,7 @@ export default defineEventHandler(async (event) => {
     //     statusMessage: error?.response?._data?.detail || 'Upstream request failed'
     //   })
     // }
+    return {'google': 1}
   } catch (error) {
     const template = generateErrorTemplate(error)
     throw createError(template)

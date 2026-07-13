@@ -9,7 +9,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   // const config = useRuntimeConfig()
 
   const authenticatedFetch = $fetch.create({
-    baseURL: '/api/proxy',
+    // baseURL: '/api/proxy',
     // onRequest({ options }) {
     //   if (import.meta.server) {
     //     const headers = useRequestHeaders([ 'cookie' ])
