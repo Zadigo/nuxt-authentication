@@ -31,11 +31,15 @@ export default defineEventHandler(async (event) => {
       responseTemplate.detail = 'Refresh token is invalid or expired'
     }
 
+    // const domain = config.public.nuxtAuthentication.domain || undefined
+    const secure = process.env.NODE_ENV === 'production'
+
     setCookie(event, config.accessTokenName || 'access', data.access, {
       httpOnly: true,
-      secure: true,
+      secure,
+      // domain,
       sameSite: 'strict',
-      maxAge: 60 * 15 // match your access token lifetime
+      maxAge: config.public.nuxtAuthentication.accessTokenMaxAge || 60 * 15
     })
   } catch (error) {
     // console.log((error as any)?.data)

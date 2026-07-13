@@ -283,6 +283,28 @@ The maximum age of the access token in seconds (default: 300).
 
 The maximum age of the refresh token in seconds (default: 1209600).
 
+## Authenticating with Rest Framework and Django
+
+To authenticate with Django REST framework, you can use an `TokenAuthSupportCookie` that augments the `TokenAuthentication` class to support cookie based authentication. This allows you to authenticate users using the access token stored in a cookie.
+
+```python
+from rest_framework.authentication import TokenAuthentication
+from django.http import HttpRequest
+
+
+class TokenAuthSupportCookie(TokenAuthentication):
+    """Extends the TokenAuthentication class to support cookie based authentication"""
+
+    access_token_name: str = 'access'
+
+    def authenticate(self, request: HttpRequest):
+        print(request.headers)
+        if self.access_token_name in request.COOKIES and 'HTTP_AUTHORIZATION' not in request.META:
+            token = request.COOKIES.get(self.access_token_name)
+            return self.authenticate_credentials(token)
+        return super().authenticate(request)
+```
+
 ## Contribution
 
 <details>

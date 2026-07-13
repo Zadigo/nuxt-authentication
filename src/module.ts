@@ -55,7 +55,7 @@ export interface ModuleOptions {
    *
    * @default 'renew'
    */
-  strategy?: 'renew' | 'login' | 'fail' | (string & {})
+  strategy?: 'renew' | 'login' | 'fail' | 'do_nothing' | (string & {})
   /**
    * Optional bearer token type
    * @default 'Token'
@@ -129,7 +129,7 @@ export default defineNuxtModule<ModuleOptions>({
     verifyEndpoint: '/api/token/verify',
     // autoVerifyToken: false,
     // autoVerifyTokenInterval: 60,
-    accessTokenMaxAge: null,
+    accessTokenMaxAge: 60 * 15,
     refreshTokenMaxAge: 60 * 60 * 24 * 7 // 7 days
   },
   meta: {
@@ -150,7 +150,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.runtimeConfig.public.nuxtAuthentication = moduleOptions
 
     // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`
-    addPlugin(resolver.resolve('./runtime/nuxtauth.server'))
+    addPlugin(resolver.resolve('./runtime/nuxtauth'))
 
     // Add composables
     const composablesPath = resolver.resolve('./runtime/composables')

@@ -12,10 +12,14 @@ export default defineEventHandler((event) => {
   const { payload } = useJwt<JWTResponseData>(access)
   const userId = payload.value?.user_id
 
+  const domain = config.public.nuxtAuthentication.cookieDomain || undefined
+  const secure = process.env.NODE_ENV === 'production'
+
   setCookie(event, 'user_id', userId?.toString() || '', {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure,
+    domain,
     maxAge: 60 * 60 * 24 * 7 // 7 days
   })
 

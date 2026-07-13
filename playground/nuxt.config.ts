@@ -5,7 +5,13 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/ui'
   ],
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true
+    }
+  },
   runtimeConfig: {
     public: {
       nuxtAuthentication: {
@@ -16,10 +22,8 @@ export default defineNuxtConfig({
         verifyEndpoint: '/auth/v1/token/verify/',
         login: '/login',
         loginRedirectPath: '/',
-        strategy: 'renew',
+        strategy: 'do_nothing',
         bearerTokenType: 'Token',
-        accessTokenMaxAge: 15 * 60, // 15 minutes
-        refreshTokenMaxAge: 7 * 24 * 60 * 60, // 7 days
         // autoVerifyToken: true,
         // autoVerifyTokenInterval: 30 // 1 minute
       }

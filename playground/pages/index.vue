@@ -33,10 +33,10 @@
             Verify Access Token
           </nuxt-button>
 
-          <!-- <nuxt-button color="warning" @click='async () => void getProfile()'>
+          <nuxt-button color="warning" @click='async () => void executeUnprotected()'>
             <icon name="i-lucide:user" />
-            Get profile
-          </nuxt-button> -->
+            Unprotected
+          </nuxt-button>
         </div>
       </nuxt-card>
 
@@ -46,6 +46,7 @@
           <p>Authenticated: {{ isAuthenticated }}</p>
           <p>Token verified: {{ tokenVerified }}</p>
           <p>Has token: {{ isActive }}</p>
+          <p>Fetch: {{ response }}</p>
         </client-only>
 
         <nuxt-button color="error" @click="() => useLogout()">
@@ -78,11 +79,17 @@ async function refresh() {
 
 const { execute } = useAuthenticatedFetch<{ id: number, username: string, email: string }>('/v1/accounts/profile', {
   baseURL: 'http://127.0.0.1:8000',
+  method: 'GET'
 })
 
-async function authenticatedFetch() {
-  const response = await execute()
-  console.log('Authenticated fetch response:', response)
-}
+const { execute: executeUnprotected } = useAuthenticatedFetch<{ message: string }>('/v1/accounts/unprotected', {
+  baseURL: 'http://127.0.0.1:8000',
+  method: 'GET'
+})
 
+const response = ref<{ id: number, username: string, email: string } | null>(null)
+async function authenticatedFetch() {
+  response.value = await execute()
+  console.log('Authenticated fetch response:', response.value)
+}
 </script>

@@ -20,18 +20,23 @@ export default defineEventHandler(async (event) => {
       responseTemplate.success = true
     }
 
+    // const domain = config.public.nuxtAuthentication.domain || undefined
+    const secure = process.env.NODE_ENV === 'production'
+
     setCookie(event, config.public.nuxtAuthentication.accessTokenName || 'access', data.access, {
       httpOnly: true,
-      secure: true,
+      secure,
+      // domain,
       sameSite: 'strict',
-      maxAge: 60 * 15 // match your access token lifetime
+      maxAge: config.public.nuxtAuthentication.accessTokenMaxAge || 60 * 15
     })
 
     setCookie(event, config.public.nuxtAuthentication.refreshTokenName || 'refresh', data.refresh, {
       httpOnly: true,
-      secure: true,
+      secure,
+      // domain,
       sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7
+      maxAge: config.public.nuxtAuthentication.refreshTokenMaxAge || 60 * 60 * 24 * 7
     })
   } catch (error) {
     responseTemplate.detail = (error as any)?.data?.detail || 'Login failed'

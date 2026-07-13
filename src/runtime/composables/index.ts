@@ -31,7 +31,7 @@ export const useNuxtAuthentication = createGlobalState(() => {
       const response = await $fetch<VerifyResponse>('/api/auth/verify', {
         method: 'POST'
       })
-      
+
       const value = response.detail
       
       if (!isDefined(value)) {
@@ -287,11 +287,13 @@ export function useAuthenticatedFetch<T extends Record<string, unknown>>(request
   const execute = async () => {
     try {
       return await $authenticatedFetch<T>(request, options)
-    } catch (error: any) {
-      throw createError({
-        statusCode: error?.response?.status || 500,
-        statusMessage: error?.response?._data?.detail || 'Authenticated fetch request failed'
-      })
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Authenticated fetch failed:', error.message)
+      } else {
+        console.error('Authenticated fetch failed with unknown error:', error)
+      }
+      throw error
     }
   }  
 
