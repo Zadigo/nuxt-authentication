@@ -28,7 +28,6 @@ Nuxt Authentication is a simple module that proposes authentication functionalit
 
 - ⛰ &nbsp;Login / Logout
 - 🚠 &nbsp;Check Authentication Status
-- 🌲 &nbsp;Fetch User Profile
 
 ## Quick Setup
 
@@ -189,13 +188,13 @@ You can check for the user state with the `useUser` composable:
 
 ```vue
 <script lang="ts" setup>
-const { isAuthenticated } = useUser()
+const { isAuthenticated, getUserId } = useUser()
 </script>
 ```
 
-<!-- `userId`
+`userId` (from `getUserId()`)
 
-The unique identifier of the authenticated user parsed from the [JWT token](https://jwt.io/). -->
+The unique identifier of the authenticated user parsed from the [JWT token](https://jwt.io/).
 
 `isAuthenticated`
 

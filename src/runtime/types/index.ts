@@ -34,3 +34,10 @@ export interface _DatabaseObject {
    */
   id: string | number
 }
+
+export interface JWTResponseData {
+  /**
+   * User ID of the authenticated user
+   */
+  user_id: string | number
+}

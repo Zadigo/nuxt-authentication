@@ -226,18 +226,9 @@ export async function useLogout(redirectPath?: string) {
 export function useUser() {
   const isAuthenticated = useState('isAuthenticated')
 
-  // async function getUserId() {
-  //   return await $fetch<{ user_id: string }>('/api/auth/me')
-  // }
-
-  // async function getProfile() {
-  //   const data = await getUserId()
-  //   return await $fetch<P>('/api/auth/profile', {
-  //     query: {
-  //       id: data.user_id
-  //     }
-  //   })
-  // }
+  async function getUserId() {
+    return await $fetch<{ user_id: string }>('/api/auth/me')
+  }
 
   return {
     /**
@@ -246,13 +237,9 @@ export function useUser() {
      */
     isAuthenticated,
     /**
-     * Function to get the user's profile
-     */
-    // getProfile,
-    /**
      * Function to get the user's ID
      */
-    // getUserId
+    getUserId
   }
 }
 

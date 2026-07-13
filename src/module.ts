@@ -30,28 +30,6 @@ export interface ModuleOptions {
    */
   accessEndpoint?: string
   /**
-   * Profile endpoint on the backend
-   * @default '/api/auth/profile'
-   */
-  profileEndpoint?: string
-  /**
-   * Profile endpoint type, either 'api' or 'graphql'
-   * @default 'api'
-   */
-  profileEndpointType?: 'api' | 'graphql'
-  /**
-   * Fields to fetch from the profile endpoint (only applicable for graphql)
-   * @default []
-   */
-  profileEndpointFields?: ('email' | 'username' | 'id' | string)[]
-  /**
-   * GraphQL query to fetch the user profile (only applicable for graphql)
-   * @default undefined
-   * @example `query { user { id, email, username } }`
-   * @example `query { profile { id, email, username } }`
-   */
-  profileGraphqlQuery?: string
-  /**
    * Protected routes that require authentication. 
    * If the user is not authenticated, they will be 
    * redirected to the login page.
@@ -141,10 +119,6 @@ export default defineNuxtModule<ModuleOptions>({
     domain: '',
     refreshEndpoint: '/api/token/refresh',
     accessEndpoint: '/api/token/access',
-    profileEndpoint: '/api/auth/profile',
-    profileEndpointType: 'api',
-    profileEndpointFields: [],
-    profileGraphqlQuery: undefined,
     // protectedRoutes: [],
     login: '/login',
     loginRedirectPath: '/',
@@ -210,10 +184,6 @@ export default defineNuxtModule<ModuleOptions>({
         handler: resolver.resolve('./runtime/server/api/auth/renew.post')
       },
       {
-        route: '/api/auth/profile',
-        handler: resolver.resolve('./runtime/server/api/auth/profile.get')
-      },
-      {
         route: '/api/auth/logout',
         handler: resolver.resolve('./runtime/server/api/auth/logout.post')
       },
@@ -224,10 +194,6 @@ export default defineNuxtModule<ModuleOptions>({
       {
         route: '/api/auth/has-token',
         handler: resolver.resolve('./runtime/server/api/auth/has-token.get')
-      },
-      {
-        route: '/api/auth/profile',
-        handler: resolver.resolve('./runtime/server/api/auth/profile.get')
       },
       {
         route: '/api/proxy/[...path]',
