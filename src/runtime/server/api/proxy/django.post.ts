@@ -21,12 +21,14 @@ export default defineEventHandler(async (event) => {
     const access = getCookie(event, config.public.nuxtAuthentication.accessTokenName || 'access')
 
     const requestBody = await readBody<ProxyRequest>(event)
+
     requestBody.options.headers = {
       ...requestBody.options.headers,
       'Accept': 'application/json',
       'Authorization': `${config.public.nuxtAuthentication.bearerTokenType} ${access}`,
       'Content-Type': 'application/json'
     }
+    
     return $fetch(requestBody.path, requestBody.options)
   } catch (error) {
     const template = generateErrorTemplate(error)
