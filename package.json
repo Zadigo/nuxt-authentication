@@ -46,7 +46,7 @@
     "release:patch": "npm run lint & npm run test && npm run prepack && changelogen --release --patch && npm publish && git push --follow-tags",
     "lint": "oxlint lint .",
     "lint:eslint": "eslint .",
-    "test": "vitest run --coverage --tags-filter=unit --tags-filter=nuxt",
+    "test": "vitest run --coverage",
     "test:watch": "vitest watch --coverage",
     "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
     "test:release": "npm run lint & npm run test && npm run prepack && changelogen --release --patch --no-commit --no-tag"

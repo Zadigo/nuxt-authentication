@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import { useLogin } from '../../src/runtime/composables'
 import type { NavigationFailure } from 'vue-router'
+import { defineComponent } from 'vue'
+import { useState } from '#imports'
 
 vi.stubGlobal('$fetch', vi.fn(async (url: string, _options?: Record<string, unknown>) => {
   if (url === '/api/auth/login') {
