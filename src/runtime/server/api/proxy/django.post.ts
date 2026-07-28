@@ -1,5 +1,5 @@
-import { getCookie, createError } from 'h3'
-import { useRuntimeConfig, defineEventHandler, readBody  } from '#imports'
+import { getCookie, createError, readBody, defineEventHandler } from 'h3'
+import { useRuntimeConfig } from '#imports'
 import { generateErrorTemplate } from '../../../app/utils'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
 

@@ -56,7 +56,9 @@
     "@vueuse/core": "^14.3.0",
     "@vueuse/integrations": "^14.3.0",
     "defu": "^6.1.7",
+    "jose": "^6.2.4",
     "jwt-decode": "^4.0.0",
+    "openid-client": "^6.8.4",
     "ufo": "^1.6.4"
   },
   "devDependencies": {

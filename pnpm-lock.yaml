@@ -20,9 +20,15 @@ importers:
       defu:
         specifier: ^6.1.7
         version: 6.1.7
+      jose:
+        specifier: ^6.2.4
+        version: 6.2.4
       jwt-decode:
         specifier: ^4.0.0
         version: 4.0.0
+      openid-client:
+        specifier: ^6.8.4
+        version: 6.8.4
       ufo:
         specifier: ^1.6.4
         version: 1.6.4
@@ -4623,6 +4629,9 @@ packages:
     resolution: {integrity: sha512-gkR5tmjfhAC7GwuAbXSDOG691Ei3VLTvkKc5hGG5NoPWPwqSTCy0Q3I39dH1Aae0ExC3OXHfHjZSZtFDwqfRwg==}
     engines: {node: '>=18.0.0'}
 
+  jose@6.2.4:
+    resolution: {integrity: sha512-N8acGzVsQy6M/fjFcxtysNc4Q379TcM5dM/qKkNtsHFji88yANnXTr7BLeP75iPnFwBfQzM/jg2BZ9+HZrHCZA==}
+
   js-beautify@1.15.4:
     resolution: {integrity: sha512-9/KXeZUKKJwqCXUdBxFJ3vPh467OCckSBmYDwSK/EtV090K+iMJ7zx2S3HLVDIWFQdqMIsZWbnaGiba18aWhaA==}
     engines: {node: '>=14'}
@@ -5139,6 +5148,9 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  oauth4webapi@3.8.6:
+    resolution: {integrity: sha512-iwemM91xz8nryHti2yTmg5fhyEMVOkOXwHNqbvcATjyajb5oQxCQzrNOA6uElRHuMhQQTKUyFKV9y/CNyg25BQ==}
+
   object-deep-merge@2.0.1:
     resolution: {integrity: sha512-aKttDKcU3pyZqKcCkDhsMn70WmZFG2JGDQLP9EcLyTSIFQRCPWLAmBZRLJnrVUrhPG1jETEEbfdgbNtJf1LyMg==}
 
@@ -5181,6 +5193,9 @@ packages:
   open@11.0.0:
     resolution: {integrity: sha512-smsWv2LzFjP03xmvFoJ331ss6h+jixfA4UUV/Bsiyuu4YJPfN+FIQGOIiv4w9/+MoHkfkJ22UIaQWRVFRfH6Vw==}
     engines: {node: '>=20'}
+
+  openid-client@6.8.4:
+    resolution: {integrity: sha512-QSw0BA08piujetEwfZsHoTrDpMEha7GDZDicQqVwX4u0ChCjefvjDB++TZ8BTg76UpwhzIQgdvvfgfl3HpCSAw==}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -11795,6 +11810,8 @@ snapshots:
     dependencies:
       '@discoveryjs/natural-compare': 1.1.0
 
+  jose@6.2.4: {}
+
   js-beautify@1.15.4:
     dependencies:
       config-chain: 1.1.13
@@ -12489,6 +12506,8 @@ snapshots:
       pathe: 2.0.3
       tinyexec: 1.2.4
 
+  oauth4webapi@3.8.6: {}
+
   object-deep-merge@2.0.1: {}
 
   object-identity@0.2.3: {}
@@ -12532,6 +12551,11 @@ snapshots:
       is-inside-container: 1.0.0
       powershell-utils: 0.1.0
       wsl-utils: 0.3.1
+
+  openid-client@6.8.4:
+    dependencies:
+      jose: 6.2.4
+      oauth4webapi: 3.8.6
 
   optionator@0.9.4:
     dependencies:

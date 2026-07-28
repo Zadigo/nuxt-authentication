@@ -232,6 +232,7 @@ export function useUser() {
   const isAuthenticated = useState('isAuthenticated')
 
   async function getUserId() {
+    console.log($fetch)
     return await $fetch<{ id: string }>('/api/auth/me')
   }
 

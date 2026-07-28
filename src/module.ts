@@ -96,6 +96,20 @@ export interface ModuleOptions {
    * @default 7 days (604800 seconds)
    */
   refreshTokenMaxAge?: Nullable<number>
+
+  oauth?: {
+    apple?: {
+      clientId: string
+      teamId: string
+      keyId: string
+      privateKey: string
+      scope: string | string[]
+      authorizationUrl: string
+      authorizationParams: Record<string, boolean>
+      tokenUrl: string
+      redirectUri: string
+    }
+  }
 }
 
 declare module '@nuxt/schema' {
@@ -130,7 +144,7 @@ export default defineNuxtModule<ModuleOptions>({
     // autoVerifyToken: false,
     // autoVerifyTokenInterval: 60,
     accessTokenMaxAge: 60 * 15,
-    refreshTokenMaxAge: 60 * 60 * 24 * 7 // 7 days
+    refreshTokenMaxAge: 60 * 60 * 24 * 7, // 7 days
   },
   meta: {
     name: 'nuxt-authentication',
