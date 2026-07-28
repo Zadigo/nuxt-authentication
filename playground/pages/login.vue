@@ -1,21 +1,21 @@
 <template>
   <section class="my-20 space-y-2">
-    <nuxt-container class="max-w-2xl mx-auto">
-      <nuxt-card>
+    <u-container class="max-w-2xl mx-auto">
+      <u-card>
         <div class="space-y-4">
-          <nuxt-input v-model="usernameField" class="w-full" placeholder="Email" />
-          <nuxt-input v-model="password" class="w-full" placeholder="Password" />
-          <nuxt-button to="/">
+          <u-input v-model="usernameField" class="w-full" placeholder="Email" />
+          <u-input v-model="password" class="w-full" placeholder="Password" />
+          <u-button to="/">
             <icon name="i-lucide:arrow-left" />
             Home
-          </nuxt-button>
-          <nuxt-button @click="() => login()">
+          </u-button>
+          <u-button @click="() => login()">
             <icon name="i-lucide:log-in" />
             Login
-          </nuxt-button>
+          </u-button>
         </div>
-      </nuxt-card>
-    </nuxt-container>
+      </u-card>
+    </u-container>
   </section>
 </template>
 

@@ -173,7 +173,8 @@ export default defineNuxtModule<ModuleOptions>({
       { name: 'useLogout', from: composablesPath },
       { name: 'useUser', from: composablesPath },
       { name: 'useNuxtAuthentication', from: composablesPath },
-      { name: 'useRefreshAccessToken', from: composablesPath }
+      { name: 'useRefreshAccessToken', from: composablesPath },
+      { name: 'useWebauthnAuthentication', from: composablesPath }
     ])
 
     // Add utils

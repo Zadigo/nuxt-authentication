@@ -3,6 +3,8 @@ import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
 import type { BaseSsrResponse, BaseDjangoResponse } from '../../types'
 
+export * from './web'
+
 export type VerifyResponse = BaseSsrResponse & Partial<Pick<BaseDjangoResponse, 'detail'>>
 
 /**

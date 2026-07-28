@@ -1,19 +1,19 @@
 <template>
   <section>
-    <nuxt-container>
-      <nuxt-card>
-        <nuxt-input v-model="username" placeholder="Email" />
-        <nuxt-input v-model="password" placeholder="Password" />
+    <u-container>
+      <u-card>
+        <u-input v-model="username" placeholder="Email" />
+        <u-input v-model="password" placeholder="Password" />
 
-        <nuxt-login v-model:username-field="username" v-model:password-field="password">
+        <u-login v-model:username-field="username" v-model:password-field="password">
           <template #default="{ login: login2 }">
-            <nuxt-button @click="() => login2()">
+            <u-button @click="() => login2()">
               Login via Slot
-            </nuxt-button>
+            </u-button>
           </template>
-        </nuxt-login>
-      </nuxt-card>
-    </nuxt-container>
+        </u-login>
+      </u-card>
+    </u-container>
   </section>
 </template>
 

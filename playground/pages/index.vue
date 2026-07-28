@@ -1,46 +1,46 @@
 <template>
   <section class="my-20 space-y-2">
-    <nuxt-container>
-      <nuxt-card class="max-w-2xl mx-auto">
+    <u-container>
+      <u-card class="max-w-2xl mx-auto">
         <div class="space-x-4">
-          <nuxt-button color="info" to="/login">
+          <u-button color="info" to="/login">
             <icon name="i-lucide:link" />
             Login
-          </nuxt-button>
+          </u-button>
 
-          <nuxt-button color="info" to="/via-slot">
+          <u-button color="info" to="/via-slot">
             <icon name="i-lucide:link" />
             Login via Slot
-          </nuxt-button>
+          </u-button>
 
-          <nuxt-button color="error" to="/protected">
+          <u-button color="error" to="/protected">
             <icon name="i-lucide:link" />
             Protected page
-          </nuxt-button>
+          </u-button>
 
-          <nuxt-button color="success" @click="authenticatedFetch">
+          <u-button color="success" @click="authenticatedFetch">
             <icon name="i-lucide:shield-check" />
             Authenticated Fetch
-          </nuxt-button>
+          </u-button>
 
-          <nuxt-button color="warning" @click="refresh">
+          <u-button color="warning" @click="refresh">
             <icon name="i-lucide:refresh-ccw" />
             Refresh Access Token
-          </nuxt-button>
+          </u-button>
 
-          <nuxt-button color="neutral" @click='async () => void verify("Token is invalid or expired")'>
+          <u-button color="neutral" @click='async () => void verify("Token is invalid or expired")'>
             <icon name="i-lucide:shield-check" />
             Verify Access Token
-          </nuxt-button>
+          </u-button>
 
-          <nuxt-button color="neutral" @click='async () => void executeUnprotected()'>
+          <u-button color="neutral" @click='async () => void executeUnprotected()'>
             <icon name="i-lucide:user" />
             Unprotected
-          </nuxt-button>
+          </u-button>
         </div>
-      </nuxt-card>
+      </u-card>
 
-      <nuxt-card class="max-w-2xl mx-auto mt-5 space-y-4">
+      <u-card class="max-w-2xl mx-auto mt-5 space-y-4">
         <client-only>
           <p>User ID: {{ userId }}</p>
           <p>Authenticated: {{ isAuthenticated }}</p>
@@ -49,12 +49,12 @@
           <p>Fetch: {{ response }}</p>
         </client-only>
 
-        <nuxt-button color="error" @click="() => useLogout()">
+        <u-button color="error" @click="() => useLogout()">
           <icon name="i-lucide:log-out" />
           Logout
-        </nuxt-button>
-      </nuxt-card>
-    </nuxt-container>
+        </u-button>
+      </u-card>
+    </u-container>
   </section>
 </template>
 

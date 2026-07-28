@@ -21,3 +21,9 @@ export interface OAuthEventHandlerConfig<T, R extends { user: unknown, tokens: u
   onSuccess: OnSuccessFunction<R>
   onError?: OnErrorFunction<Record<string, string | number> | undefined>
 }
+
+export interface WebAuthnUser {
+  userName: string
+  displayName?: string
+  [key: string]: unknown
+}

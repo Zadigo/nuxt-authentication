@@ -29,9 +29,7 @@ export default defineNuxtConfig({
       }
     }
   },
-  ui: {
-    prefix: 'Nuxt'
-  },
+  ui: {},
   css: [
     '~/assets/css/tailwind.css'
   ],

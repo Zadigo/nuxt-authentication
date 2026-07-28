@@ -51,6 +51,10 @@
     "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
     "test:release": "npm run lint & npm run test && npm run prepack && changelogen --release --patch --no-commit --no-tag"
   },
+  "peerDependencies": {
+    "@simplewebauthn/browser": "^13.0.0",
+    "@simplewebauthn/server": "^13.0.0"
+  },
   "dependencies": {
     "@nuxt/kit": "^4.5.0",
     "@vueuse/core": "^14.3.0",
