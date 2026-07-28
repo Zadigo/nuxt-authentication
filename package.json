@@ -66,6 +66,7 @@
     "ufo": "^1.6.4"
   },
   "devDependencies": {
+    "@iconify-json/fa7-brands": "^1.2.4",
     "@iconify-json/lucide": "^1.2.116",
     "@nuxt/devtools": "4.0.0-alpha.9",
     "@nuxt/eslint": "1.16.0",

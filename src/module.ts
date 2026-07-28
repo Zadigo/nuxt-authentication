@@ -1,6 +1,6 @@
 import { addImports, addServerHandler, createResolver, defineNuxtModule, installModule, addComponent } from '@nuxt/kit'
 import { defu } from 'defu'
-import type { Nullable } from './runtime/types'
+import type { AppleOauthConfig, GoogleOauthConfig, Nullable } from './runtime/types'
 import type { NitroEventHandler } from 'nitropack/types'
 
 export type ProtectedRoute = {
@@ -103,18 +103,13 @@ export interface ModuleOptions {
      * @description This configuration is used for Apple OAuth authentication. It includes the necessary parameters for the OAuth flow, such as client ID, team ID, key ID, private key, scope, and redirect URI. Optional parameters for authorization URL and token URL can also be provided.
      * @link https://developer.apple.com/documentation/accountorganizationaldatasharing/creating-a-client-secret
      */
-    apple?: {
-      clientId: string
-      teamId: string
-      keyId: string
-      privateKey: string
-      scope: string | string[]
-      redirectUri: string
-    } & Partial<{
-      authorizationUrl: string
-      authorizationParams: Record<string, boolean>
-      tokenUrl: string
-    }>
+    apple?: AppleOauthConfig
+    /**
+     * Google OAuth configuration
+     * @description This configuration is used for Google OAuth authentication. It includes the necessary parameters for the OAuth flow, such as client ID, client secret, scope, and redirect URI. Optional parameters for authorization URL and token URL can also be provided.
+     * @link https://developers.google.com/identity/protocols/oauth2
+     */
+    google?: GoogleOauthConfig
   }
 }
 
@@ -159,10 +154,10 @@ export default defineNuxtModule<ModuleOptions>({
         keyId: '',
         privateKey: '',
         scope: 'name email',
-        redirectUri: '',
         authorizationUrl: 'https://appleid.apple.com/auth/authorize',
         authorizationParams: {}, // response_mode: 'form_post'
-        tokenUrl: 'https://appleid.apple.com/auth/token'
+        tokenUrl: 'https://appleid.apple.com/auth/token',
+        redirectUri: ''
       }
     }
   },
@@ -204,7 +199,17 @@ export default defineNuxtModule<ModuleOptions>({
       { name: 'getAuthenticatedHeader', from: utilsPath }
     ])
 
-    // Add server routes
+    // Add server imports directory for webauthn
+    // addServerImportsDir([
+    //   resolver.resolve('./runtime/server/lib')
+    // ])
+    // addServerHandler({
+    //   method: 'get',
+    //   route: '/auth/apple',
+    //   handler: resolver.resolve('./runtime/server/lib/oauth/apple')
+    // })
+
+    // Add server routes (Django)
     const routes: NitroEventHandler[] = [
       {
         method: 'post',

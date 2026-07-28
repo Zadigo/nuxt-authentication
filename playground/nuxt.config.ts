@@ -12,6 +12,9 @@ export default defineNuxtConfig({
       enabled: true
     }
   },
+  imports: {
+    autoImport: true
+  },
   runtimeConfig: {
     public: {
       nuxtAuthentication: {

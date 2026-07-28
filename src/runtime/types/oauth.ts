@@ -1,4 +1,5 @@
 import type { H3Event, H3Error } from 'h3'
+import { sendRedirect } from 'h3'
 
 export type ATProtoProvider = 'bluesky'
 
@@ -12,12 +13,12 @@ export type BaseJWTTokens = {
   sub: string
 }
 
-export type OnSuccessFunction<T extends Record<string, unknown> = Record<string, unknown>> = (event: H3Event, result: T) => Promise<T> | void
+export type OnSuccessFunction<R extends Record<string, string> = Record<string, string>> = (event: H3Event, result: R) => ReturnType<typeof sendRedirect>
 
-export type OnErrorFunction<T = undefined> = (event: H3Event, error: H3Error) => Promise<T> | void
+export type OnErrorFunction<T = undefined> = (event: H3Event, error: H3Error) => Promise<T>
 
-export interface OAuthEventHandlerConfig<T, R extends { user: unknown, tokens: unknown }> {
-  config: T
+export interface OAuthEventHandlerConfig<T, R extends { user: string, tokens: string }> {
+  config?: T
   onSuccess: OnSuccessFunction<R>
   onError?: OnErrorFunction<Record<string, string | number> | undefined>
 }
@@ -27,3 +28,34 @@ export interface WebAuthnUser {
   displayName?: string
   [key: string]: unknown
 }
+
+type BaseOAuthConfig = {
+  clientId: string
+} & Partial<{
+  scope: string | string[]
+  authorizationUrl: string
+  tokenUrl: string
+  redirectUri: string
+  authorizationParams: Record<string, boolean>
+}>
+
+/**
+ * Apple
+ */
+
+export type AppleOauthConfig = BaseOAuthConfig & {
+  clientId: string
+  teamId: string
+  keyId: string
+  privateKey: string
+}
+
+/**
+ * Google
+ */
+
+export type GoogleOauthConfig = BaseOAuthConfig & {
+  clientSecret: string
+} & Partial<{
+  userUrl: string
+}>
