@@ -1,7 +1,7 @@
 import { getCookie } from 'h3'
 import { useRuntimeConfig, defineEventHandler, createError } from '#imports'
 import type { BaseSsrResponse, BaseDjangoResponse } from '../../../types'
-import { generateErrorTemplate, getAuthenticatedHeader } from '../../../../runtime/utils'
+import { generateErrorTemplate, getAuthenticatedHeader } from '../../../../runtime/app/utils'
 
 export default defineEventHandler(async (event) => {
   try {

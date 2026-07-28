@@ -2,7 +2,7 @@ import { useJwt } from '@vueuse/integrations/useJwt'
 import { defineEventHandler, useRuntimeConfig, createError } from '#imports'
 import { getCookie, setCookie } from 'h3'
 import type { JWTResponseData } from '../../../types'
-import { generateErrorTemplate } from '../../../utils'
+import { generateErrorTemplate } from '../../../app/utils'
 import { toValue } from 'vue'
 
 export default defineEventHandler((event) => {

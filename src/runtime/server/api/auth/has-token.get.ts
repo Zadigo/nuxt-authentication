@@ -1,6 +1,6 @@
 import { defineEventHandler, useRuntimeConfig } from '#imports'
 import { getCookie } from 'h3'
-import { generateErrorTemplate } from '../../../utils'
+import { generateErrorTemplate } from '../../../app/utils'
 
 export default defineEventHandler((event) => {
   try {

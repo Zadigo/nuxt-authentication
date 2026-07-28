@@ -1,7 +1,7 @@
 import { computed, createError, isDefined, ref, useRouter, useRuntimeConfig, useState, preloadRouteComponents } from '#imports'
 import { createGlobalState, useCounter, useThrottleFn, useToggle } from '@vueuse/core'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
-import type { BaseSsrResponse, BaseDjangoResponse } from '../types'
+import type { BaseSsrResponse, BaseDjangoResponse } from '../../types'
 
 export type VerifyResponse = BaseSsrResponse & Partial<Pick<BaseDjangoResponse, 'detail'>>
 

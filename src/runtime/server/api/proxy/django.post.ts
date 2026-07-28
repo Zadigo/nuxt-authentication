@@ -1,6 +1,6 @@
 import { getCookie, createError } from 'h3'
-import { useRuntimeConfig, defineEventHandler, readBody } from '#imports'
-import { generateErrorTemplate } from '../../../utils'
+import { useRuntimeConfig, defineEventHandler, readBody  } from '#imports'
+import { generateErrorTemplate } from '../../../app/utils'
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack/types'
 
 type ProxyRequest = {

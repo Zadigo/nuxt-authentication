@@ -1,5 +1,5 @@
 import { createError, useRuntimeConfig } from '#imports'
-import type { DjangoLoginResponse, Undefineable } from '../types'
+import type { DjangoLoginResponse, Undefineable } from '../../types'
 import { FetchError } from 'ofetch'
 
 /**

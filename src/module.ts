@@ -153,7 +153,7 @@ export default defineNuxtModule<ModuleOptions>({
     // addPlugin(resolver.resolve('./runtime/nuxtauth'))
 
     // Add composables
-    const composablesPath = resolver.resolve('./runtime/composables')
+    const composablesPath = resolver.resolve('./runtime/app/composables')
     addImports([
       { name: 'useLogin', from: composablesPath },
       { name: 'useLogout', from: composablesPath },
@@ -163,7 +163,7 @@ export default defineNuxtModule<ModuleOptions>({
     ])
 
     // Add utils
-    const utilsPath = resolver.resolve('./runtime/utils')
+    const utilsPath = resolver.resolve('./runtime/app/utils')
     addImports([
       { name: 'ssrRefreshAccessToken', from: utilsPath },
       { name: 'getAuthenticatedHeader', from: utilsPath }
@@ -208,13 +208,13 @@ export default defineNuxtModule<ModuleOptions>({
 
     addComponent({
       name: 'AuthHandler',
-      filePath: resolver.resolve('./runtime/components/NuxtLogin.vue'),
+      filePath: resolver.resolve('./runtime/app/components/NuxtLogin.vue'),
       global: true
     })
 
     addComponent({
       name: 'LogoutHandler',
-      filePath: resolver.resolve('./runtime/components/NuxtLogout.vue'),
+      filePath: resolver.resolve('./runtime/app/components/NuxtLogout.vue'),
       global: true
     })
 
