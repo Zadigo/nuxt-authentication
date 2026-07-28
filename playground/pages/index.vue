@@ -8,6 +8,11 @@
             Login
           </u-button>
 
+          <u-button color="info" to="/web-authentication">
+            <icon name="i-lucide:link" />
+            Web Authentication
+          </u-button>
+
           <u-button color="info" to="/via-slot">
             <icon name="i-lucide:link" />
             Login via Slot

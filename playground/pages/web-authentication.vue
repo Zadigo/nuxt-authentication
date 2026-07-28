@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <section class="my-20 space-y-2">
     <!-- !user?.webauthn &&  -->
     <u-button v-if="supportsWebAuthn" size="sm" variant="subtle" color="neutral" @click="() => { toggleModal() }">
       Passkeys
@@ -40,7 +40,7 @@
         </div>
       </template>
     </u-modal>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
