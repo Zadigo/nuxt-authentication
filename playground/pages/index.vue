@@ -59,7 +59,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useRefreshAccessToken, useAuthenticatedFetch } from '../../src/runtime/composables'
+import { useRefreshAccessToken, useAuthenticatedFetch } from '../../src/runtime/app/composables'
 
 const { tokenVerified, verify, hasToken } = useNuxtAuthentication()
 const { isAuthenticated, getUserId } = useUser()

@@ -10,6 +10,5 @@
 </template>
 
 <script lang="ts" setup>
-const { $nuxtAuthentication } = useNuxtApp()
-await $nuxtAuthentication(`/v1/accounts/profile`, { method: 'GET' })
+const { getUserId } = useUser()
 </script>

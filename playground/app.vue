@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useNuxtAuthentication } from '../src/runtime/composables'
+import { useNuxtAuthentication } from '../src/runtime/app/composables'
 
 useNuxtAuthentication()
 </script>

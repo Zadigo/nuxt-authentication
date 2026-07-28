@@ -1,8 +1,8 @@
 import { browserSupportsWebAuthn, browserSupportsWebAuthnAutofill, platformAuthenticatorIsAvailable, startAuthentication, startRegistration } from '@simplewebauthn/browser'
 import type { VerifiedAuthenticationResponse, VerifiedRegistrationResponse } from '@simplewebauthn/server'
-// import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types'
 import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser'
 import type { WebAuthnUser } from '../../types'
+import { toValue, computed, type MaybeRefOrGetter } from '#imports'
  
 export type WebAuthenticationOptions = {
   registerEndpoint: string
@@ -24,7 +24,7 @@ interface AuthenticationInitResponse {
 export function useWebauthnAuthentication(options?: Partial<WebAuthenticationOptions>) {
   const { registerEndpoint, authenticateEndpoint, browserAutoFill } = options || {}
   
-  async function signup(user: WebAuthnUser) {
+  async function register(user: WebAuthnUser) {
     if (!registerEndpoint) {
       throw new Error('registerEndpoint is required for web authentication signup.')
     }
@@ -54,7 +54,7 @@ export function useWebauthnAuthentication(options?: Partial<WebAuthenticationOpt
     return verificationResponse && verificationResponse.verified
   }
 
-  async function authenticate(username?: string) {
+  async function authenticate(username?: MaybeRefOrGetter<string>) {
     if (!authenticateEndpoint) {
       throw new Error('authenticateEndpoint is required for web authentication.')
     }
@@ -63,7 +63,7 @@ export function useWebauthnAuthentication(options?: Partial<WebAuthenticationOpt
       method: 'POST',
       body: {
         verify: false,
-        userName: username,
+        userName: toValue(username),
       },
     })
 
@@ -76,7 +76,7 @@ export function useWebauthnAuthentication(options?: Partial<WebAuthenticationOpt
       method: 'POST',
       body: {
         attemptId,
-        userName: username,
+        userName: toValue(username),
         response: assertionResponse,
         verify: true,
       },
@@ -93,7 +93,7 @@ export function useWebauthnAuthentication(options?: Partial<WebAuthenticationOpt
     supportsWebAuthn,
     supportsAutofill,
     platformAuthenticatorAvailable,
-    signup,
+    register,
     authenticate,
   }
 }
