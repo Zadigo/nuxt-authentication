@@ -33,6 +33,15 @@ export type OAuthAppleTokens = BaseJWTTokens & {
   nonce_supported: boolean
 }
 
+export type AuthorizationValidationResponse = {
+  access_token: string
+  token_type: 'Bearer' | (string & {})
+  expires_in: number
+  refresh_token: string
+  id_token: string
+}
+
+
 type EventHandlerConfig = OAuthEventHandlerConfig<AppleOauthConfig, { user: Partial<AppleUser>, tokens: OAuthAppleTokens }>
 
 export function defineOAuthAppleEventHandler({ config, onSuccess, onError }: EventHandlerConfig): EventHandlerConfig  {
@@ -90,7 +99,7 @@ export function defineOAuthAppleEventHandler({ config, onSuccess, onError }: Eve
         }
       )
 
-      const accessTokenResponse = await getAccessToken<{ id_token: string }>(config.tokenUrl, {
+      const accessTokenResponse = await getAccessToken<AuthorizationValidationResponse>(config.tokenUrl, {
         params: {
           code,
           client_id: config.clientId,
@@ -100,7 +109,7 @@ export function defineOAuthAppleEventHandler({ config, onSuccess, onError }: Eve
         }
       })
 
-      const payload = await verifyJwt<OAuthAppleTokens>(accessTokenResponse.id_token, {
+      const payload = await verifyJwt<OAuthAppleTokens>(accessTokenResponse?.id_token, {
         publicJwkUrl: 'https://appleid.apple.com/auth/keys',
         audience: config.clientId,
         issuer: 'https://appleid.apple.com',

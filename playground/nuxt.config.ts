@@ -24,6 +24,21 @@ export default defineNuxtConfig({
         loginRedirectPath: '/',
         strategy: 'do_nothing',
         bearerTokenType: 'Token',
+        oauth: {
+          apple: {
+            clientId: process.env.NUXT_OAUTH_APPLE_CLIENT_ID,
+            teamId: process.env.NUXT_OAUTH_APPLE_TEAM_ID,
+            keyId: process.env.NUXT_OAUTH_APPLE_KEY_ID,
+            privateKey: process.env.NUXT_OAUTH_APPLE_PRIVATE_KEY,
+            scope: process.env.NUXT_OAUTH_APPLE_SCOPE || 'name email',
+            authorizationUrl: process.env.NUXT_OAUTH_APPLE_AUTHORIZATION_URL,
+            authorizationParams: {
+              response_mode: 'form_post'
+            },
+            tokenUrl: process.env.NUXT_OAUTH_APPLE_TOKEN_URL,
+            redirectUri: process.env.NUXT_OAUTH_APPLE_REDIRECT_URI
+          }
+        },
         // autoVerifyToken: true,
         // autoVerifyTokenInterval: 30 // 1 minute
       }

@@ -48,6 +48,7 @@ export interface RequestAccessTokenOptions {
 }
 
 
+// TODO: Rename to authorization validation
 export async function getAccessToken<T>(url: string, options: Partial<RequestAccessTokenOptions>): Promise<T | undefined> {
   let _body: RequestAccessTokenBody | string = options.body || options.params || {}
   const headers = {

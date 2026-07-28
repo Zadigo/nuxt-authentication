@@ -22,7 +22,7 @@ interface AuthenticationInitResponse {
 
 
 export function useWebauthnAuthentication(options?: Partial<WebAuthenticationOptions>) {
-  const { registerEndpoint, authenticateEndpoint, browserAutoFill } = options || {}
+  const { registerEndpoint = '/api/webauthn/register', authenticateEndpoint = '/api/webauthn/authenticate', browserAutoFill = true } = options || {}
   
   async function register(user: WebAuthnUser) {
     if (!registerEndpoint) {

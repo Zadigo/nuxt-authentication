@@ -98,17 +98,23 @@ export interface ModuleOptions {
   refreshTokenMaxAge?: Nullable<number>
 
   oauth?: {
+    /**
+     * Apple OAuth configuration
+     * @description This configuration is used for Apple OAuth authentication. It includes the necessary parameters for the OAuth flow, such as client ID, team ID, key ID, private key, scope, and redirect URI. Optional parameters for authorization URL and token URL can also be provided.
+     * @link https://developer.apple.com/documentation/accountorganizationaldatasharing/creating-a-client-secret
+     */
     apple?: {
       clientId: string
       teamId: string
       keyId: string
       privateKey: string
       scope: string | string[]
+      redirectUri: string
+    } & Partial<{
       authorizationUrl: string
       authorizationParams: Record<string, boolean>
       tokenUrl: string
-      redirectUri: string
-    }
+    }>
   }
 }
 
@@ -145,6 +151,20 @@ export default defineNuxtModule<ModuleOptions>({
     // autoVerifyTokenInterval: 60,
     accessTokenMaxAge: 60 * 15,
     refreshTokenMaxAge: 60 * 60 * 24 * 7, // 7 days
+
+    oauth: {
+      apple: {
+        clientId: '',
+        teamId: '',
+        keyId: '',
+        privateKey: '',
+        scope: 'name email',
+        redirectUri: '',
+        authorizationUrl: 'https://appleid.apple.com/auth/authorize',
+        authorizationParams: {}, // response_mode: 'form_post'
+        tokenUrl: 'https://appleid.apple.com/auth/token'
+      }
+    }
   },
   meta: {
     name: 'nuxt-authentication',
@@ -187,30 +207,37 @@ export default defineNuxtModule<ModuleOptions>({
     // Add server routes
     const routes: NitroEventHandler[] = [
       {
+        method: 'post',
         route: '/api/auth/login',
         handler: resolver.resolve('./runtime/server/api/auth/login.post')
       },
       {
+        method: 'get',
         route: '/api/auth/me',
         handler: resolver.resolve('./runtime/server/api/auth/me.get')
       },
       {
+        method: 'post',
         route: '/api/auth/renew',
         handler: resolver.resolve('./runtime/server/api/auth/renew.post')
       },
       {
+        method: 'post',
         route: '/api/auth/logout',
         handler: resolver.resolve('./runtime/server/api/auth/logout.post')
       },
       {
+        method: 'post',
         route: '/api/auth/verify',
         handler: resolver.resolve('./runtime/server/api/auth/verify.post')
       },
       {
+        method: 'get',
         route: '/api/auth/has-token',
         handler: resolver.resolve('./runtime/server/api/auth/has-token.get')
       },
       {
+        method: 'post',
         route: '/api/proxy/django',
         handler: resolver.resolve('./runtime/server/api/proxy/django.post')
       }
