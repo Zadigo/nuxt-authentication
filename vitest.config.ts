@@ -28,6 +28,9 @@ export default defineConfig({
           tags: [
             {
               name: 'nuxt',
+            },
+            {
+              name: 'unit'
             }
           ]
         }

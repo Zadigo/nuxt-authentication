@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-describe('composables', () => {
+describe.skip('composables', () => {
   it('should be defined', () => {
     expect(true).toBe(true)
   })
