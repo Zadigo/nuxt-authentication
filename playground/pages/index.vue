@@ -42,7 +42,7 @@
 
       <nuxt-card class="max-w-2xl mx-auto mt-5 space-y-4">
         <client-only>
-          <p>User ID: {{ userId }}</p>
+          <p>User ID: {{ user }}</p>
           <p>Authenticated: {{ isAuthenticated }}</p>
           <p>Token verified: {{ tokenVerified }}</p>
           <p>Has token: {{ isActive }}</p>
@@ -65,7 +65,7 @@ const { tokenVerified, verify, hasToken } = useNuxtAuthentication()
 const { isAuthenticated, getUserId } = useUser()
 
 const isActive = computedAsync<boolean>(async () => await hasToken())
-const userId = computedAsync(() => getUserId())
+const user = computedAsync(async () => await getUserId())
   
 async function refresh() {
   const { renew } = await useRefreshAccessToken()
