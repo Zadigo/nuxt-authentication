@@ -229,7 +229,7 @@ export async function useLogout(redirectPath?: string) {
  * Composable used to check if the user is logged in
  */
 export function useUser() {
-  const isAuthenticated = useState('isAuthenticated')
+  const isAuthenticated = useState<boolean>('isAuthenticated')
 
   async function getUserId() {
     return await $fetch<{ id: string }>('/api/auth/me')
@@ -242,7 +242,7 @@ export function useUser() {
      */
     isAuthenticated,
     /**
-     * Function to get the user's ID
+     * Function to get the authenticated user's ID
      */
     getUserId
   }
