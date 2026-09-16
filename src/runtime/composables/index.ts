@@ -140,6 +140,7 @@ export function useLogin<T extends BaseSsrResponse>(usernameFieldName: 'email' |
   const password = ref<string>('')
 
   const config = useRuntimeConfig().public.nuxtAuthentication
+  console.log('Nuxt Authentication Config:', config)
 
   if (config.loginRedirectPath && import.meta.client) {
     void preloadRouteComponents(config.loginRedirectPath)
@@ -229,7 +230,7 @@ export async function useLogout(redirectPath?: string) {
  * Composable used to check if the user is logged in
  */
 export function useUser() {
-  const isAuthenticated = useState('isAuthenticated')
+  const isAuthenticated = useState<boolean>('isAuthenticated')
 
   async function getUserId() {
     return await $fetch<{ id: string }>('/api/auth/me')
@@ -242,7 +243,7 @@ export function useUser() {
      */
     isAuthenticated,
     /**
-     * Function to get the user's ID
+     * Function to get the authenticated user's ID
      */
     getUserId
   }
@@ -285,11 +286,7 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
  */
 export function useAuthenticatedFetch<T extends Record<string, unknown>>(path: NitroFetchRequest, options?: NitroFetchOptions<NitroFetchRequest, 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'>) {
   async function execute() {
-    const body = { path: path, options}
-    return await $fetch<T>('/api/proxy/django', {
-      method: 'POST',
-      body
-    })
+    return await $fetch<T>(path, options)
   }
 
   return {

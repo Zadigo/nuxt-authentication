@@ -1,5 +1,5 @@
-import { setCookie, readBody} from 'h3'
-import { useRuntimeConfig, defineEventHandler, createError } from '#imports'
+import { setCookie, readBody, defineEventHandler } from 'h3'
+import { useRuntimeConfig, createError } from '#imports'
 import type { DjangoLoginResponse, BaseSsrResponse, BaseDjangoResponse } from '../../../types'
 import { generateErrorTemplate } from '../../../utils'
 
