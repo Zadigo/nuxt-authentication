@@ -1,22 +1,42 @@
+import { defineEventHandler, proxyRequest, getCookie } from 'h3'
+import { useRuntimeConfig } from '#imports'
+import type {  FetchOptions } from 'ofetch'
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
 
-  // Set up your Django backend base URL
-  const djangoBaseUrl = config.public.nuxtAuthentication.domain || 'http://127.0.0.1:8000'
+  const djangoBaseUrl = (config.public.nuxtAuthentication.domain || 'http://127.0.0.1:8000').replace(/\/$/, '')
+  const remainingPath = event.context.params?.['_'] || ''
+  const targetUrl = new URL(remainingPath, djangoBaseUrl).toString()
 
-  // Get the subpath after /api/django/ (e.g., "v1/users/profile/")
-  const remainingPath = event.context.params?.path || ''
-  const targetUrl = `${djangoBaseUrl}/${remainingPath}`
+  // Never trust a client-supplied Authorization header on a proxied route —
+  // strip whatever the client sent before deciding whether to inject our own.
+  delete event.node.req.headers['authorization']
 
-  // Fetch the header we attached in our middleware
-  const authHeader = event.context.djangoAuthHeader
+  let authHeader = event.context.djangoAuthHeader
+
+  // if (authHeader) {
+  //   return await proxyRequest(event, targetUrl, { headers: { authorization: authHeader || '' } })
+  // } else {
+  //   return await proxyRequest(event, targetUrl)
+  // }
+
+  let headers: Record<string, string> = { ...event.node.req.headers }
 
   if (authHeader) {
-    // Inject the authorization header securely before proxying
-    event.node.req.headers['authorization'] = authHeader
+    // event.node.req.headers['authorization'] = authHeader
+    headers['authorization'] = authHeader
+  } else {
+    const token = getCookie(event, config.public.nuxtAuthentication.accessTokenName)
+    if (token) {
+      authHeader = `${config.public.nuxtAuthentication.bearerTokenType} ${token}`
+      // event.node.req.headers['authorization'] = authHeader
+      headers['authorization'] = authHeader
+    }
   }
 
-  // Nitro's proxyRequest automatically forwards 
-  // methods, bodies, queries, and headers safely
-  return await proxyRequest(event, targetUrl)
+  console.log(targetUrl)
+
+  const method = event.node.req.method as FetchOptions['method']
+  return $fetch(targetUrl, { method, headers, baseURL: djangoBaseUrl })
 })

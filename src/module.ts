@@ -196,15 +196,18 @@ export default defineNuxtModule<ModuleOptions>({
         handler: resolver.resolve('./runtime/server/api/auth/has-token.get')
       },
       {
-        route: '/api/proxy/django',
-        handler: resolver.resolve('./runtime/server/api/proxy/django.post')
+        route: '/api/django/**',
+        handler: resolver.resolve('./runtime/server/api/django/[...path].ts')
       }
     ]
     routes.forEach(route => addServerHandler(route))
 
     // Add middleware from your module
-    // const middlewarePath = resolver.resolve('./runtime/middleware')
-    // addRouteMiddleware('auth', middlewarePath)
+    addServerHandler({
+      middleware: true,
+      route: '/api/django/**',
+      handler: resolver.resolve('./runtime/server/middlewares/authenticated.ts')
+    })
 
     addComponent({
       name: 'AuthHandler',

@@ -77,13 +77,11 @@ async function refresh() {
  * Authenticated Request
  */
 
-const { execute } = useAuthenticatedFetch<{ id: number, username: string, email: string }>('/v1/accounts/profile', {
-  baseURL: 'http://127.0.0.1:8000',
+const { execute } = useAuthenticatedFetch<{ id: number, username: string, email: string }>('/api/django/v1/accounts/profile', {
   method: 'GET'
 })
 
-const { execute: executeUnprotected } = useAuthenticatedFetch<{ message: string }>('/v1/accounts/unprotected', {
-  baseURL: 'http://127.0.0.1:8000',
+const { execute: executeUnprotected } = useAuthenticatedFetch<{ message: string }>('/api/django/v1/accounts/unprotected', {
   method: 'GET'
 })
 

@@ -10,6 +10,6 @@
 </template>
 
 <script lang="ts" setup>
-const { $nuxtAuthentication } = useNuxtApp()
-await $nuxtAuthentication(`/v1/accounts/profile`, { method: 'GET' })
+// baseURL: useRuntimeConfig().public.nuxtAuthentication.domain
+await $fetch('/api/django/v1/accounts/profile', { method: 'GET' })
 </script>

@@ -285,11 +285,7 @@ export async function useRefreshAccessToken(throttle: number = 5000) {
  */
 export function useAuthenticatedFetch<T extends Record<string, unknown>>(path: NitroFetchRequest, options?: NitroFetchOptions<NitroFetchRequest, 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace'>) {
   async function execute() {
-    const body = { path: path, options}
-    return await $fetch<T>('/api/proxy/django', {
-      method: 'POST',
-      body
-    })
+    return await $fetch<T>(path, options)
   }
 
   return {
