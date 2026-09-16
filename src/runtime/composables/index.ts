@@ -140,6 +140,7 @@ export function useLogin<T extends BaseSsrResponse>(usernameFieldName: 'email' |
   const password = ref<string>('')
 
   const config = useRuntimeConfig().public.nuxtAuthentication
+  console.log('Nuxt Authentication Config:', config)
 
   if (config.loginRedirectPath && import.meta.client) {
     void preloadRouteComponents(config.loginRedirectPath)
